@@ -5,34 +5,13 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
-import java.awt.Canvas;
-import java.awt.Panel;
-import java.awt.GridLayout;
-import javax.swing.Box;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Button;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.BorderLayout;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JScrollPane;
-import java.awt.ScrollPane;
 import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Cursor;
-import java.awt.TextArea;
-import javax.swing.JFormattedTextField;
-import javax.swing.JTabbedPane;
-import javax.swing.JDesktopPane;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.Font;
-import java.awt.Insets;
+import java.awt.Dimension;
+import javax.swing.ImageIcon;
 
 public class window_login {
 
@@ -41,7 +20,7 @@ public class window_login {
 	private JLabel lblNewLabel_1;
 	private JPasswordField passwordField;
 	private JButton btnNewButton;
-	private ScrollPane scrollPane;
+	private JLabel iconoPersonaLogin;
 
 	/**
 	 * Launch the application.
@@ -71,21 +50,32 @@ public class window_login {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.getContentPane().setBackground(new Color(174, 220, 230));
+		frame.setName("Futsal Champagne - Login");
+		frame.setMaximumSize(new Dimension(900, 750));
+		frame.setMinimumSize(new Dimension(500, 400));
+		frame.setBackground(new Color(128, 128, 0));
 		frame.getContentPane().setFont(new Font("Tahoma", Font.PLAIN, 15));
-		frame.setBounds(100, 100, 559, 362);
+		frame.setBounds(100, 100, 412, 298);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(new MigLayout("", "[40px:n:70px,grow][30%:n:30%][40%:n:40%][40px:n:70px,grow]", "[30px:n:70px][30%:n:30%][15%:n:15%][15%:n:15%][20%:n:20%][60px:n:100px,grow]"));
+		frame.getContentPane().setLayout(new MigLayout("", "[7px:n,grow][30%:n:30%][40%:n:40%][7px:n,grow]", "[5px:n,grow][40px:110px:200px][20px:45px:90px][20px:45px:90px][30px:60px:115px][5px:n,grow]"));
 		
-		scrollPane = new ScrollPane();
-		scrollPane.setBackground(new Color(102, 0, 255));
-		frame.getContentPane().add(scrollPane, "cell 2 1,alignx left,aligny center");
+		iconoPersonaLogin = new JLabel("");
+		iconoPersonaLogin.setIcon(new ImageIcon("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
+		frame.getContentPane().add(iconoPersonaLogin, "cell 1 1 2 1,alignx center,aligny center");
 		
+		//ImageIcon ico =new ImageIcon(getClass().getResource("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
+		//ImageIcon img =new ImageIcon(ico.getImage().getScaledInstance(iconoPersonaLogin.getWidth(), iconoPersonaLogin.getHeight(), Image.SCALE_SMOOTH));
+		//iconoPersonaLogin.setIcon(img);
+	
+		
+				
 		JLabel lblNewLabel = new JLabel("Usuario");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		frame.getContentPane().add(lblNewLabel, "cell 1 2,alignx right,aligny center");
 		
 		textField = new JTextField();
-		frame.getContentPane().add(textField, "cell 2 2,alignx left");
+		frame.getContentPane().add(textField, "cell 2 2,alignx left,aligny center");
 		textField.setColumns(20);
 		
 		lblNewLabel_1 = new JLabel("Contraseña");
@@ -94,7 +84,7 @@ public class window_login {
 		
 		passwordField = new JPasswordField();
 		passwordField.setColumns(20);
-		frame.getContentPane().add(passwordField, "cell 2 3,alignx left");
+		frame.getContentPane().add(passwordField, "cell 2 3,alignx left,aligny center");
 		
 		btnNewButton = new JButton("Login");
 		btnNewButton.addActionListener(new ActionListener() {
