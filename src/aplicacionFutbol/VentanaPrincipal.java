@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+
 import java.awt.FlowLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -95,7 +97,12 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 		// obtengo sobre que componente se ha realizado la accion
 		Object o = ae.getSource();
 		if (o == btnCrearUsuario) {
-			JOptionPane.showMessageDialog(this,(String)"crear usuario","error",JOptionPane.INFORMATION_MESSAGE);
+			// si se pulsa en introduccion de datos
+			CrearUsuario cu = new CrearUsuario();
+			// la muestro
+			cu.setVisible(true);
+			// oculto la ventana de inicio
+			//this.setVisible(false);
 		}else if (o == btnIniciarTemporada) {
 			JOptionPane.showMessageDialog(this, (String) "crear temporada", "Error",JOptionPane.INFORMATION_MESSAGE);
 		}else if (o == btnVerTemporada) {
