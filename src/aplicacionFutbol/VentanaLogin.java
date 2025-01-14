@@ -144,4 +144,10 @@ public class VentanaLogin extends JFrame implements ActionListener{
 		});
 		VentanaLogin.getContentPane().add(btnSingUp, "cell 1 5 2 1,alignx center,aligny top");
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
