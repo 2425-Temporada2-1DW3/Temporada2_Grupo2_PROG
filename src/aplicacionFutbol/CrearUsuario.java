@@ -12,16 +12,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
-import java.awt.GridLayout;
-import javax.swing.BoxLayout;
-import java.awt.CardLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import javax.swing.SpringLayout;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 public class CrearUsuario extends JFrame implements ActionListener{
 
@@ -54,7 +49,11 @@ public class CrearUsuario extends JFrame implements ActionListener{
 	 * Create the frame.
 	 */
 	public CrearUsuario() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setName("cu");
+		setTitle("Usuarios");
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Original_Login top image.png"));
+		setMinimumSize(new Dimension(500, 400));
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
