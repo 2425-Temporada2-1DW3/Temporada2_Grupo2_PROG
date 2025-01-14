@@ -20,18 +20,27 @@ import java.awt.GridBagConstraints;
 import javax.swing.SpringLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JPasswordField;
 
 public class CrearUsuario extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField tfNombre;
-	private JTextField tfContrasena;
-	private JTextField textField_2;
 	private JButton btnAltaUsuario;
-	private String rolSelec;
+	private String rolSelec = "Usuario";
+	private JPasswordField pfContrasena;
+	private JPasswordField pfContrasena2;
+	private JButton btnBorrarUsuarios;
 
 
 	/**
@@ -83,16 +92,14 @@ public class CrearUsuario extends JFrame implements ActionListener{
 		JLabel lblContrasena = new JLabel("Contraseña: ");
 		panel.add(lblContrasena, "cell 4 3,alignx trailing");
 		
-		tfContrasena = new JTextField();
-		panel.add(tfContrasena, "cell 5 3,growx");
-		tfContrasena.setColumns(10);
+		pfContrasena = new JPasswordField();
+		panel.add(pfContrasena, "cell 5 3,growx");
 		
 		JLabel lblContraseñaRep = new JLabel("Repetir contraseña: ");
 		panel.add(lblContraseñaRep, "cell 4 5,alignx trailing");
 		
-		textField_2 = new JTextField();
-		panel.add(textField_2, "cell 5 5,growx");
-		textField_2.setColumns(10);
+		pfContrasena2 = new JPasswordField();
+		panel.add(pfContrasena2, "cell 5 5,growx");
 		
 		JLabel lblRol_1 = new JLabel("Rol del nuevo Usuario: ");
 		panel.add(lblRol_1, "cell 4 6,alignx trailing");
@@ -121,14 +128,74 @@ public class CrearUsuario extends JFrame implements ActionListener{
 		btnAltaUsuario = new JButton("Dar de alta al usuario");
 		btnAltaUsuario.addActionListener(this);
 		panel_1.add(btnAltaUsuario);
+		
+		btnBorrarUsuarios = new JButton("Eliminar Usuarios");
+		btnBorrarUsuarios.addActionListener(this);
+		panel_1.add(btnBorrarUsuarios);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		// TODO Auto-generated method stub
 		Object o = ae.getSource();
-		if (o == btnAltaUsuario)
-		JOptionPane.showMessageDialog(this, (String) "Creando un usuario con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
+		if (o == btnAltaUsuario) {
+			/* OBTENEMOS LOS VALORES INTRODUCIDOS EN LOS CAMPOS DE TEXTO*/
+			// obtengo el nombre escrito
+			String tfNombreStr = tfNombre.getText().trim();
+			
+			// Obtener la contraseña1
+            char[] password1 = pfContrasena.getPassword();
+            String password1Str = new String(password1).trim();
+            // Limpieza del arreglo por seguridad
+            java.util.Arrays.fill(password1, '\0'); 
+            
+
+            // Obtener la contraseña2
+            char[] password2 = pfContrasena2.getPassword();
+            String password2Str = new String(password2).trim();
+            // Limpieza del arreglo por seguridad
+            java.util.Arrays.fill(password1, '\0'); 
+
+            // Mostrar la contraseña en consola (¡Solo para pruebas!)
+            System.out.println("Contraseña ingresada:"+password1Str+" "+password2Str);
+            /* OBTENEMOS LOS VALORES INTRODUCIDOS EN LOS CAMPOS DE TEXTO*/
+            
+            /*COMPROBAMS QUE LOS DATOS INTRODUCIDOS SEAN VÁLIDOS*/
+			// comprobamos que no haya ningun campo de texto vacío
+			if (tfNombreStr.isEmpty() || password1Str.isEmpty() || password2Str.isEmpty()) {
+				JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios ", "Error",JOptionPane.ERROR_MESSAGE);
+			}else if(!password1Str.equals(password2Str)){
+				JOptionPane.showMessageDialog(this, (String) "Las contraseñas no coinciden._"+password1Str+"_"+password2Str+"_", "Error",JOptionPane.ERROR_MESSAGE);
+			}else {
+				// creamos el objeto
+				Usuario u = new Usuario(tfNombreStr,password1Str,password2Str);
+				// guardamos en usuarios.ser
+				guardarUsuario("usuario.ser", u);
+				
+			}
+			
+			// mensaje informativo
+			JOptionPane.showMessageDialog(this, (String) "Creando un usuario "+tfNombreStr+" con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
+		}else if(o == btnBorrarUsuarios) {
+			BorrarUsuario bu = new BorrarUsuario();
+			// muestro la ventana
+			bu.setVisible(true);
+		}
+	}
+	
+	public static void guardarUsuario(String nombreArchivo, Usuario usuario) {
+		try {
+			FileOutputStream fos = new FileOutputStream(nombreArchivo, true);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			// añadimos el usuario al archivo usuarios.ser
+			oos.writeObject(usuario);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
