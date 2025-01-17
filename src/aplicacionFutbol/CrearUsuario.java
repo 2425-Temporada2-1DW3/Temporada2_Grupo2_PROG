@@ -20,10 +20,12 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.SpringLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.EOFException;
@@ -58,6 +60,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 	private JPasswordField pfContrasena2;
 	private JButton btnBorrarUsuarios;
 	private Boolean modificado = false;
+	private Boolean ValidData = true;
 	public static DefaultListModel<Usuario> dlm;
 	public static JList<Usuario> lstUsuarios;
 
@@ -83,14 +86,15 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 	 */
 	
 	public CrearUsuario() {
-		
 		/*
 		 ELEMENTOS GRÁFICOS
 		 */
 		this.addWindowListener(this); 
 		// IMPEDIMOS QUE LA VENTANA SE CIERRE AL PULSAR LA X Y AÑADO EL WINDOWLISTENER
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 450, 533);
+		setMinimumSize(new Dimension(525, 350));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -204,7 +208,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		if (o == btnAltaUsuario) {
 			/* 
 			 * OBTENEMOS LOS VALORES INTRODUCIDOS EN LOS CAMPOS DE TEXTO
-			 */
+			 ----------------------------------------------------------*/
 			// obtengo el nombre escrito
 			String tfNombreStr = tfNombre.getText().trim();
 			
@@ -222,21 +226,25 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 
             // Mostrar la datos en consola (¡Solo para pruebas!)
             System.out.println("Usuario: "+tfNombreStr+" Contraseñas ingresadas:"+password1Str+" "+password2Str+" ROL: "+rolSelec);
-			/* 
+			/*----------------------------------------------------------------- 
 			 * OBTENEMOS LOS VALORES INTRODUCIDOS EN LOS CAMPOS DE TEXTO
 			 */
             
             /*
-             * COMPROBAMS QUE LOS DATOS INTRODUCIDOS SEAN VÁLIDOS
-             * */
+             * COMPROBAMS SI LOS DATOS INTRODUCIDOS SON VÁLIDOS
+             * ----------------------------------------------------*/
 			// comprobamos que no haya ningun campo de texto vacío
 			if (tfNombreStr.isEmpty() || password1Str.isEmpty() || password2Str.isEmpty()) {
+				ValidData = false;
 				JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios ", "Error",JOptionPane.ERROR_MESSAGE);
 			// comprobamos que las contraseñas coincidan
 			}else if(!password1Str.equals(password2Str)){
+				ValidData = false;
 				JOptionPane.showMessageDialog(this, (String) "Las contraseñas no coinciden._"+password1Str+"_"+password2Str+"_", "Error",JOptionPane.ERROR_MESSAGE);
-			// ¡¡¡¡FALTA!!!! comprobamos que no sea un usuario que ya existse
-				
+			
+			}else {
+				// ¡¡¡¡FALTA!!!! comprobamos que no sea un usuario que ya existse
+			}	
 				
 			/*
 			 * COMPROBAMS QUE LOS DATOS INTRODUCIDOS SEAN VÁLIDOS
@@ -245,7 +253,9 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 			/*
 			 * AÑADIMOS AL USUARIO (COMO OBJETO)
 			 * */
-			}else {
+			if (ValidData == false) {
+				JOptionPane.showMessageDialog(this, (String) "Hay un error con los datos del usuario", "Error",JOptionPane.ERROR_MESSAGE);
+			}else if(ValidData == true){
 				// creamos el objeto
 				Usuario u = new Usuario(tfNombreStr,password1Str,rolSelec);
 				// lo añadimos al dlm
@@ -257,10 +267,10 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 				}
 				//indicamos que los valores han sido modificados
 				modificado = true;
-				
+				// mensaje informativo
+				JOptionPane.showMessageDialog(this, (String) "Creando un usuario "+tfNombreStr+" con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
 			}
-			// mensaje informativo
-			JOptionPane.showMessageDialog(this, (String) "Creando un usuario "+tfNombreStr+" con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
+
 			/*
 			 * AÑADIMOS AL USUARIO (COMO OBJETO)
 			 * */
