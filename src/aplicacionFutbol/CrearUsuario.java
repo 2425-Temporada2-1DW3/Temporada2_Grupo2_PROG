@@ -30,6 +30,8 @@ import java.io.PrintWriter;
 import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JPasswordField;
+import java.awt.Toolkit;
+import java.awt.Dimension;
 
 public class CrearUsuario extends JFrame implements ActionListener{
 
@@ -63,7 +65,9 @@ public class CrearUsuario extends JFrame implements ActionListener{
 	 * Create the frame.
 	 */
 	public CrearUsuario() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setMinimumSize(new Dimension(525, 350));
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
