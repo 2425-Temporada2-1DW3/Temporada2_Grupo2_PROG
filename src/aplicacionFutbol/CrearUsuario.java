@@ -94,7 +94,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		setMinimumSize(new Dimension(525, 350));
 		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 525, 584);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -258,12 +258,10 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 			/*---------------------------------------------------------
 			 * COMPROBAMOS QUE LOS DATOS INTRODUCIDOS SEAN VÁLIDOS
 			 * */
-			if (ValidData == false) {
-				JOptionPane.showMessageDialog(this, (String) "Hay un error con los datos del usuario", "Error",JOptionPane.ERROR_MESSAGE);
 			/*
 			* AÑADIMOS AL USUARIO (COMO OBJETO)
 			* -------------------------------------------*/
-			}else if(ValidData == true){
+			if(ValidData == true){
 				// creamos el objeto
 				Usuario u = new Usuario(tfNombreStr,password1Str,rolSelec);
 				// lo añadimos al dlm
@@ -278,7 +276,6 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 				// mensaje informativo
 				JOptionPane.showMessageDialog(this, (String) "Creando un usuario "+tfNombreStr+" con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
 			}
-
 			/*--------------------------------------------------
 			 * AÑADIMOS AL USUARIO (COMO OBJETO)
 			 * 
