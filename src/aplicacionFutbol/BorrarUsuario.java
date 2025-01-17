@@ -6,9 +6,11 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +33,8 @@ import java.awt.event.ActionEvent;
 
 public class BorrarUsuario extends JFrame implements ActionListener,Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4870481935552617691L;
 	private JPanel contentPane;
-	private JList<Usuario> lstUsuarios;
-	private DefaultListModel<Usuario> dlm;
 	private JButton btnBorrar;
 
 	/**
@@ -60,7 +57,12 @@ public class BorrarUsuario extends JFrame implements ActionListener,Serializable
 	 * Create the frame.
 	 */
 	public BorrarUsuario() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		/*
+		 ELEMENTOS GRÁFICOS
+		 */
+		
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -74,30 +76,18 @@ public class BorrarUsuario extends JFrame implements ActionListener,Serializable
 		btnBorrar = new JButton("Eliminar");
 		btnBorrar.addActionListener(this);
 		panel.add(btnBorrar);
-	
-		
-		
+		// añadimos la lista (con el dlm de CrearUsuario) al JFrame.
+		try {
+			//contentPane.add(CrearUsuario.lstUsuarios, BorderLayout.CENTER);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		//********************************
-		//Modelo de la lista
-		//********************************
-		// creo el modelo de datos de la lista
-		dlm = new DefaultListModel<Usuario>();
-		// creo la lista
-		lstUsuarios = new JList<>(dlm);
-		// asocio el modelo de datos a la lista
-		//lstUsuarios.setModel(dlm);
-		contentPane.add(lstUsuarios, BorderLayout.CENTER);
+		/*
+		 ELEMENTOS GRÁFICOS
+		 */
 		
-		// Permitir seleccion multiple
-		lstUsuarios.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		
-	    // Leer usuarios del archivo
-        List<Usuario> usuarios = leerUsuarios("usuario.ser");
-        System.out.println("Usuarios leídos: " + usuarios.size());
-		for (Usuario usuario : usuarios) {
-            dlm.addElement(usuario);
-        }
 	}
 	
 	
@@ -108,21 +98,23 @@ public class BorrarUsuario extends JFrame implements ActionListener,Serializable
 		
 		if (o == btnBorrar) {
 			// obtenemos los elementos seleccionados de la lista
-			List<Usuario> ValSelec = lstUsuarios.getSelectedValuesList();
-			int[] IndSelec = lstUsuarios.getSelectedIndices();
+			List<Usuario> ValSelec = CrearUsuario.lstUsuarios.getSelectedValuesList();
+			int[] IndSelec = CrearUsuario.lstUsuarios.getSelectedIndices();
+			
+			
 			// comprobamos que haya elementos seleccionados
 			if (IndSelec.length <= 0) {
 				JOptionPane.showMessageDialog(this,(String)"No hay valores seleccionados ","error",JOptionPane.ERROR_MESSAGE);
 			}else {
+				
 				// ELIMINAMOS LOS USUARIOS DEL DLM
 				for (int i = IndSelec.length - 1; i >= 0; i--) {
-					//obtengo el nombre del usuario a eliminar
-				
 					// corramos los indices almacenados en IndSelec
-					dlm.removeElementAt(IndSelec[i]);
-					
+					CrearUsuario.dlm.removeElementAt(IndSelec[i]);
 				}
-				
+				 
+				//UNA VEZ ELIMINADOS DEL DLM
+				//GrabarUsuarios("Usuario.ser", CrearUsuario.dlm);
 				
 			}
 		}
@@ -130,29 +122,22 @@ public class BorrarUsuario extends JFrame implements ActionListener,Serializable
 	}
 	
 	
-	public static List<Usuario> leerUsuarios(String nombreArchivo) {
-	        List<Usuario> usuarios = new ArrayList<>();
-
-	        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nombreArchivo))) {
-	            while (true) {
-	            	try {
-	            		Object obj = ois.readObject();
-		                if (obj instanceof Usuario) {
-		                    usuarios.add((Usuario) obj);
-		                }
-	            	} catch (EOFException e) {
-	            		break;
-	            	}
-	                
+	
+	/* 
+	 * GRABA LOS USUARIOS DLM ---> .SER
+	 * */
+	/*public static void GrabarUsuarios(String nombreArchivo, DefaultListModel<Usuario> dlm) {
+		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
+			 for (int i = 0; i < dlm.size(); i++) {
+	                oos.writeObject(dlm.get(i)); // Escribir cada objeto
 	            }
-	        } catch (IOException | ClassNotFoundException e) {
+	            System.out.println("Lista guardada en objetos.ser");
+	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
-	        return usuarios;
-	        
-
-	    }
-
-
-
+	}*/
+	
+	/* 
+	 * GRABA LOS USUARIOS DLM ---> .SER
+	 * */
 }
