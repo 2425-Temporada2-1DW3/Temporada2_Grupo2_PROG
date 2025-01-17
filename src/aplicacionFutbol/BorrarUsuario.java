@@ -56,12 +56,10 @@ public class BorrarUsuario extends JFrame implements ActionListener,Serializable
 	/**
 	 * Create the frame.
 	 */
-	public BorrarUsuario() {
-		
+	public BorrarUsuario() {	
 		/*
 		 ELEMENTOS GRÁFICOS
 		 */
-		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
