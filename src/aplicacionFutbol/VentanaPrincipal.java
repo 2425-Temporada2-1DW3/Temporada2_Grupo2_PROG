@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-
 import java.awt.FlowLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -98,9 +97,9 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 		Object o = ae.getSource();
 		if (o == btnCrearUsuario) {
 			// si se pulsa en introduccion de datos
-			CrearUsuario cu = new CrearUsuario();
+			//VentanaHola vh = new VentanaHola();
 			// la muestro
-			cu.setVisible(true);
+			//vh.setVisible(true);
 			// oculto la ventana de inicio
 			//this.setVisible(false);
 		}else if (o == btnIniciarTemporada) {
@@ -113,4 +112,4 @@ public class VentanaPrincipal extends JFrame implements ActionListener{
 
 }
 /* 
- * */
+*/
