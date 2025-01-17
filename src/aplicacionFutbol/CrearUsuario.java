@@ -241,20 +241,28 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 			}else if(!password1Str.equals(password2Str)){
 				ValidData = false;
 				JOptionPane.showMessageDialog(this, (String) "Las contraseñas no coinciden._"+password1Str+"_"+password2Str+"_", "Error",JOptionPane.ERROR_MESSAGE);
-			
 			}else {
 				// ¡¡¡¡FALTA!!!! comprobamos que no sea un usuario que ya existse
-			}	
+				Usuario usuario;
+				for (int i = dlm.getSize() -1 ; i >= 0; i--) {
+					usuario = dlm.getElementAt(i); // Obtenemos el usuario
+					if (usuario.getNombre().equalsIgnoreCase(tfNombreStr)) {
+						JOptionPane.showMessageDialog(this, (String) "El nombre "+tfNombreStr+" ya esta en uso.", "Error",JOptionPane.ERROR_MESSAGE);
+						ValidData = false;
+						break;
+					}
+					
+				}
+			}
 				
-			/*
-			 * COMPROBAMS QUE LOS DATOS INTRODUCIDOS SEAN VÁLIDOS
-			 * */
-				
-			/*
-			 * AÑADIMOS AL USUARIO (COMO OBJETO)
+			/*---------------------------------------------------------
+			 * COMPROBAMOS QUE LOS DATOS INTRODUCIDOS SEAN VÁLIDOS
 			 * */
 			if (ValidData == false) {
 				JOptionPane.showMessageDialog(this, (String) "Hay un error con los datos del usuario", "Error",JOptionPane.ERROR_MESSAGE);
+			/*
+			* AÑADIMOS AL USUARIO (COMO OBJETO)
+			* -------------------------------------------*/
 			}else if(ValidData == true){
 				// creamos el objeto
 				Usuario u = new Usuario(tfNombreStr,password1Str,rolSelec);
@@ -271,39 +279,41 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 				JOptionPane.showMessageDialog(this, (String) "Creando un usuario "+tfNombreStr+" con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
 			}
 
-			/*
+			/*--------------------------------------------------
 			 * AÑADIMOS AL USUARIO (COMO OBJETO)
+			 * 
 			 * */
+			/*
+			 *ELIMINAR USUARIOS DEL DLM
+			 * ------------------------------------------------------------------*/
 		}else if(o == btnBorrarUsuarios) {
-			
+
 			// obtenemos los elementos seleccionados de la lista
 			List<Usuario> ValSelec = CrearUsuario.lstUsuarios.getSelectedValuesList();
 			int[] IndSelec = CrearUsuario.lstUsuarios.getSelectedIndices();
-			
-			
 			// comprobamos que haya elementos seleccionados
 			if (IndSelec.length <= 0) {
 				JOptionPane.showMessageDialog(this,(String)"No hay valores seleccionados ","error",JOptionPane.ERROR_MESSAGE);
 			}else {
-				
 				// ELIMINAMOS LOS USUARIOS DEL DLM
 				Usuario usuario;
 				for (int i = IndSelec.length - 1; i >= 0; i--) {
 					usuario = ValSelec.get(i);
 					
-					//System.out.println(usuario.getNombre());
-					
 					if (!usuario.getNombre().equals("Root")) {
-						// corramos los indices almacenados en IndSelec
+						// eliminamos el usuario ¡siempre y cuando no se llame root!
 						dlm.removeElementAt(IndSelec[i]);
 					}
 				}
 				 
-				//UNA VEZ ELIMINADOS DEL DLM
+				//ELIMINAMOS DEL .SER
 				GrabarUsuarios("Usuario.ser", CrearUsuario.dlm);
 				
 			}
 		}
+		/*-----------------------------------------------------------------------------------------
+		 *ELIMINAR USUARIOS DEL DLM
+		 */
 	}
 
 
@@ -346,7 +356,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 	
 	/*
 	 * VENATNA APLICAR CAMBIOS [ SI // NO // CANCELAR ]
-	 * */
+	 * ----------------------------------------------------*/
 	@Override
 	public void windowClosing(WindowEvent e) {
 		
@@ -374,14 +384,14 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		
 	}
 	
-	/*
+	/*----------------------------------------------------------
 	 * VENATNA [ SI // NO // CANCELAR ]
 	 * */
 	
 	
 	/*
 	 * FUNCION DE CARGAR USUARIOS .SER ----> DLM
-	 * */
+	 *---------------------------------------------------------------------------------------- */
 	
 	public static void cargarUsuarios(String archivo) {
 		 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
@@ -404,9 +414,9 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 	}
 	
 	
-	/* 
+	/*
 	 * GRABA LOS USUARIOS DLM ---> .SER
-	 * */
+	 * -----------------------------------------------------------------------------------------------------------------*/
 	public static void GrabarUsuarios(String nombreArchivo, DefaultListModel<Usuario> dlm) {
 		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
 			 for (int i = 0; i < dlm.size(); i++) {
@@ -417,9 +427,4 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 	            e.printStackTrace();
 	        }
 	}
-	
-	/*
-	 * FUNCION DE CARGAR USUARIOS .SER ----> DLM
-	 * */
-
 }
