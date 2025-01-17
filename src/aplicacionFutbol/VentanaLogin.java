@@ -8,6 +8,12 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.awt.event.ActionEvent;
 import net.miginfocom.swing.MigLayout;
 import java.awt.Color;
@@ -25,7 +31,9 @@ public class VentanaLogin extends JFrame implements ActionListener{
 	private JButton btnLogin;
 	private JLabel icono;
 	private JButton btnSingUp;
-
+	public static String RolSesion = "Usuario";
+	private boolean UserMissing = true;
+	
 	/**
 	 * Launch the application.
 	 * public static void main(String[] args) {
@@ -106,33 +114,6 @@ public class VentanaLogin extends JFrame implements ActionListener{
 		Password.setColumns(20);
 		VentanaLogin.getContentPane().add(Password, "cell 2 3,alignx left,aligny center");
 		
-		btnLogin = new JButton("Login");
-		btnLogin.setSize(new Dimension(10, 10));
-		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		VentanaLogin.getContentPane().add(btnLogin, "cell 1 4 2 1,alignx center,aligny top");
-		btnLogin.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Obtiene y limpia los valores ingresados en los campos de texto
-                String usuario = User.getText().trim(); // Obtiene el texto del campo de usuario
-                String password = new String(Password.getPassword()).trim(); // Obtiene el texto del campo de contraseña
-
-                // Verificación de usuario y contraseña
-                if ("admin".equals(usuario) && "admin".equals(password)) { // Verifica si las credenciales son de admin
-                    JOptionPane.showMessageDialog(null, "Bienvenido Admin."); // Muestra un mensaje de bienvenida
-                    VentanaMain ventanaAdmin = new VentanaMain("admin"); // Crea una nueva ventana para el admin
-                    ventanaAdmin.setVisible(true); // Hace visible la ventana del admin
-                    dispose(); // Cierra la ventana actual
-                } else if ("arbitro".equals(usuario) && "arbitro".equals(password)) { // Verifica si las credenciales son de árbitro
-                    JOptionPane.showMessageDialog(null, "Bienvenido Arbitro."); // Muestra un mensaje de bienvenida
-                    VentanaMain ventanaArbitro = new VentanaMain("arbitro"); // Crea una nueva ventana para el árbitro
-                    ventanaArbitro.setVisible(true); // Hace visible la ventana del árbitro
-                    dispose(); // Cierra la ventana actual
-                } else {
-                    JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos."); // Muestra un mensaje de error si las credenciales son incorrectas.
-                }
-            }
-        });
-		
 		btnSingUp = new JButton("Sing Up");
 		btnSingUp.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		btnSingUp.addActionListener(new ActionListener() {
@@ -143,11 +124,60 @@ public class VentanaLogin extends JFrame implements ActionListener{
 			}
 		});
 		VentanaLogin.getContentPane().add(btnSingUp, "cell 1 5 2 1,alignx center,aligny top");
+		
+		btnLogin = new JButton("Login");
+		btnLogin.setSize(new Dimension(10, 10));
+		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		VentanaLogin.getContentPane().add(btnLogin, "cell 1 4 2 1,alignx center,aligny top");
+		btnLogin.addActionListener(this);
+		CrearUsuario.cargarUsuarios("Usuario.ser");
 	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
-	}
+		Object o = e.getSource();
+		
+		if (o == btnLogin) {
+            	//Se llama la función de cargar usuarios desde la clase CrearUsuario
+            	//CrearUsuario.cargarUsuarios("Usuario.ser");
+                // Obtiene y limpia los valores ingresados en los campos de texto
+                String username = User.getText().trim(); // Obtiene el texto del campo de usuario
+                String password = new String(Password.getPassword()).trim(); // Obtiene el texto del campo de contraseña
+                // Verificación de usuario y contraseña
+                
+                Usuario usuario;
+                for (int i = 0; i >= CrearUsuario.dlm.getSize()-1; i++){
+                	usuario = CrearUsuario.dlm.getElementAt(i);
+                	if (username.equalsIgnoreCase(usuario.getNombre())) {
+                		UserMissing = false;
+                		//Si el usuario coincide verificamos la contraseña
+                		if (!password.equals(usuario.getPwd())) {
+                			//Si no coincide
+                			JOptionPane.showMessageDialog(null, "Contraseña incorrecta."); // Muestra un mensaje de error si las credenciales son incorrectas.
+                			
+                			break;
+                		} else {
+                			//Si coincide se inicializa la main con el rol del usuario
+                			RolSesion = usuario.getRol();
+                			JOptionPane.showMessageDialog(null, "Bienvenido "+username); // Muestra un mensaje de error si las credenciales son incorrectas.
+                            VentanaMain ventanaRol = new VentanaMain(RolSesion); // Crea una nueva ventana para el admin
+                            ventanaRol.setVisible(true); // Hace visible la ventana del admin
+                            dispose(); // Cierra la ventana actual
+                            break;
+                		}
+                		//El usuario No coincide con ninguno de la lista
+                		}
+                	
+
+                	}
+                if (UserMissing) {
+                	JOptionPane.showMessageDialog(null, "Usuario inexistente."); // Muestra un mensaje de error si las credenciales son incorrectas.
+                }
+	    	}
+			
+		}
+		
 }
