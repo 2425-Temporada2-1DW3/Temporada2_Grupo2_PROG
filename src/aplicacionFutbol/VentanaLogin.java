@@ -19,6 +19,8 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Dimension;
+
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import java.awt.Toolkit;
 
@@ -130,6 +132,8 @@ public class VentanaLogin extends JFrame implements ActionListener{
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		VentanaLogin.getContentPane().add(btnLogin, "cell 1 4 2 1,alignx center,aligny top");
 		btnLogin.addActionListener(this);
+		
+		CrearUsuario.dlm = new DefaultListModel<Usuario>();
 		CrearUsuario.cargarUsuarios("Usuario.ser");
 	}
 
@@ -149,7 +153,7 @@ public class VentanaLogin extends JFrame implements ActionListener{
                 // Verificación de usuario y contraseña
                 
                 Usuario usuario;
-                for (int i = 0; i >= CrearUsuario.dlm.getSize()-1; i++){
+                for (int i = 0; i <= CrearUsuario.dlm.getSize()-1; i++){
                 	usuario = CrearUsuario.dlm.getElementAt(i);
                 	if (username.equalsIgnoreCase(usuario.getNombre())) {
                 		UserMissing = false;
