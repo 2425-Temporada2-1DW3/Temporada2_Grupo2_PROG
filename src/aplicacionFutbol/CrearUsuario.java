@@ -234,7 +234,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
              * */
 			// comprobamos que no haya ningun campo de texto vacío
 			if (tfNombreStr.isEmpty() || password1Str.isEmpty() || password2Str.isEmpty()) {
-				JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios ", "Error",JOptionPane.ERROR_MESSAGE);
+				//JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios ", "Error",JOptionPane.ERROR_MESSAGE);
 			// comprobamos que las contraseñas coincidan
 			}else if(!password1Str.equals(password2Str)){
 				JOptionPane.showMessageDialog(this, (String) "Las contraseñas no coinciden._"+password1Str+"_"+password2Str+"_", "Error",JOptionPane.ERROR_MESSAGE);
