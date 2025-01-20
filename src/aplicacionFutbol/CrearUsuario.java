@@ -72,7 +72,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CrearUsuario frame = new CrearUsuario();
+					CrearUsuario frame = new CrearUsuario("Admin"); //Rol por defecto al abrir la ventana = Admin
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -83,9 +83,11 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 
 	/**
 	 * Create the frame.
+	 * @param rolSesion 
 	 */
 	
-	public CrearUsuario() {
+	public CrearUsuario(String rolSesion) {
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		/*
 		 ELEMENTOS GRÁFICOS
 		 */
@@ -93,7 +95,6 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		// IMPEDIMOS QUE LA VENTANA SE CIERRE AL PULSAR LA X Y AÑADO EL WINDOWLISTENER
 		setMinimumSize(new Dimension(525, 350));
 		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 525, 584);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -198,6 +199,13 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		/*
 		 ELEMENTOS LÓGICOS
 		 */
+		
+		if (rolSesion.equals("Usuario")){
+			lblRol_1.setVisible(false);
+			cbRoles.setVisible(false);
+			lstUsuarios.setVisible(false);
+			btnBorrarUsuarios.setVisible(false);
+		}
 
 	}
 
@@ -274,7 +282,12 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 				//indicamos que los valores han sido modificados
 				modificado = true;
 				// mensaje informativo
+				if (VentanaLogin.RolSesion.equals("Usuario")){	
+				JOptionPane.showMessageDialog(this, (String) "Usuario "+tfNombreStr+" creado correctamente", "Error",JOptionPane.INFORMATION_MESSAGE);
+				dispose();
+				} else {
 				JOptionPane.showMessageDialog(this, (String) "Creando un usuario "+tfNombreStr+" con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 			/*--------------------------------------------------
 			 * AÑADIMOS AL USUARIO (COMO OBJETO)
@@ -377,7 +390,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		}
 		
 		// salgo de la aplicacion
-		System.exit(0);
+		dispose();
 		
 	}
 	

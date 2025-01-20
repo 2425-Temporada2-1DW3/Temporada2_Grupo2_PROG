@@ -167,7 +167,7 @@ public class VentanaMain extends JFrame {
 	private final JButton btnNewButton = new JButton("Crear temporada");
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
-	private final JButton btnNewButton_2 = new JButton("New button");
+	private final JButton btnEquipos = new JButton("Equipos");
 	private final JButton btnCrearUsuario = new JButton("Crear Usuario");
 
 	// Método para guardar los resultados de los partidos
@@ -257,8 +257,10 @@ public class VentanaMain extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
 			try {
-				String rolUsuario = "invitado"; // Cambia esto según sea necesario (admin, arbitro, invitado)
-				VentanaMain frame = new VentanaMain(rolUsuario); // Crear instancia de la ventana de resultados
+				String RolSesion = "Admin"; // Cambia esto según sea necesario (admin, arbitro, Usuario)
+				//Rol por defecto de la ventana
+				
+				VentanaMain frame = new VentanaMain(RolSesion); // Crear instancia de la ventana de resultados
 				frame.setVisible(true); // Hacer visible la ventana
 			} catch (Exception e) {
 				e.printStackTrace(); // Manejo de excepciones
@@ -267,10 +269,10 @@ public class VentanaMain extends JFrame {
 	}
 
 	// Constructor de la clase VentanaResultados
-	public VentanaMain(String rolUsuario) {
+	public VentanaMain(String RolSesion) {
 		setTitle("Resultados y clasificación"); // Título de la ventana
 		setIconImage(Toolkit.getDefaultToolkit().getImage("src/imagenes/balon.png")); // Icono de la ventana
-		this.modoSoloLectura = rolUsuario.equals("invitado"); // Modo solo lectura si es invitado
+		this.modoSoloLectura = RolSesion.equals("Usuario"); // Modo solo lectura si es Usuario
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cerrar la aplicación al cerrar la ventana
 		setBounds(100, 100, 900, 700); // Dimensiones de la ventana
 		contentPane = new JPanel(); // Crear el panel principal
@@ -469,7 +471,7 @@ public class VentanaMain extends JFrame {
 		panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		btnCrearUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CrearUsuario cu = new CrearUsuario();
+				CrearUsuario cu = new CrearUsuario(RolSesion);
 				// la muestro
 				cu.setVisible(true);
 			}
@@ -477,9 +479,14 @@ public class VentanaMain extends JFrame {
 		
 		panel_3.add(btnCrearUsuario);
 		
-		panel_3.add(btnNewButton_2);
+		panel_3.add(btnEquipos);
 		panel_2.add(lblRol, BorderLayout.WEST);
-		lblRol.setText("Rol: " + rolUsuario);
+		try {
+			lblRol.setText("Rol: " + VentanaLogin.RolSesion);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		generarPartidos(); // Generar los partidos al iniciar
 		mostrarJornadaActual(); // Mostrar la primera jornada
 
