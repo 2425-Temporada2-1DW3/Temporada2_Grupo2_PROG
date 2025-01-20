@@ -167,7 +167,7 @@ public class VentanaMain extends JFrame {
 	private final JButton btnNewButton = new JButton("Crear temporada");
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
-	private final JButton btnNewButton_2 = new JButton("New button");
+	private final JButton btnEquipos = new JButton("Equipos");
 	private final JButton btnCrearUsuario = new JButton("Crear Usuario");
 
 	// Método para guardar los resultados de los partidos
@@ -479,7 +479,7 @@ public class VentanaMain extends JFrame {
 		
 		panel_3.add(btnCrearUsuario);
 		
-		panel_3.add(btnNewButton_2);
+		panel_3.add(btnEquipos);
 		panel_2.add(lblRol, BorderLayout.WEST);
 		try {
 			lblRol.setText("Rol: " + VentanaLogin.RolSesion);
