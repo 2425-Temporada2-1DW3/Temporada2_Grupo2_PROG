@@ -23,6 +23,39 @@ public class Equipo implements Serializable{
 			this.jugadores.add(j4);
 			this.jugadores.add(j5);
 	}
-	
 
+
+
+	@Override
+	public String toString() {
+		return "Equipo [nombre=" + nombre + ", jugadores=" + jugadores + "]";
+	}
+
+
+
+	public String getNombre() {
+		return nombre;
+	}
+
+
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+
+
+	public List<Jugador> getJugadores() {
+		return jugadores;
+	}
+
+
+
+	public void setJugadores(List<Jugador> jugadores) {
+		this.jugadores = jugadores;
+	}
+	
+	
+	
+	
 }
