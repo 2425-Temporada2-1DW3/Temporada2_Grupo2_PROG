@@ -471,7 +471,7 @@ public class VentanaMain extends JFrame {
 		panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		btnCrearUsuario.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CrearUsuario cu = new CrearUsuario();
+				CrearUsuario cu = new CrearUsuario(RolSesion);
 				// la muestro
 				cu.setVisible(true);
 			}

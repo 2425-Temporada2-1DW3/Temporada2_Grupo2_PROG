@@ -120,7 +120,7 @@ public class VentanaLogin extends JFrame implements ActionListener{
 		btnSingUp.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		btnSingUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CrearUsuario cu = new CrearUsuario();
+				CrearUsuario cu = new CrearUsuario(RolSesion);
 				// la muestro
 				cu.setVisible(true);
 			}
