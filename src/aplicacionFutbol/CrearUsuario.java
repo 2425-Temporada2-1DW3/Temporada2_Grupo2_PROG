@@ -72,7 +72,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CrearUsuario frame = new CrearUsuario();
+					CrearUsuario frame = new CrearUsuario("Admin"); //Rol por defecto al abrir la ventana = Admin
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -83,9 +83,10 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 
 	/**
 	 * Create the frame.
+	 * @param rolSesion 
 	 */
 	
-	public CrearUsuario() {
+	public CrearUsuario(String rolSesion) {
 		/*
 		 ELEMENTOS GRÁFICOS
 		 */
@@ -139,6 +140,11 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		cbRoles.addItem("Árbitro");
 		cbRoles.addItem("Usuario");
 		cbRoles.setSelectedItem("Usuario");
+		
+		if (rolSesion.equals("Usuario")){
+			lblRol_1.setVisible(false);
+			cbRoles.setVisible(false);
+		}
 		
 		// action listener para obtener el rol seleccionado
 		cbRoles.addActionListener(new ActionListener() {
