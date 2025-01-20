@@ -257,7 +257,9 @@ public class VentanaMain extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
 			try {
-				String RolSesion = "Usuario"; // Cambia esto según sea necesario (admin, arbitro, Usuario)
+				String RolSesion = "Admin"; // Cambia esto según sea necesario (admin, arbitro, Usuario)
+				//Rol por defecto de la ventana
+				
 				VentanaMain frame = new VentanaMain(RolSesion); // Crear instancia de la ventana de resultados
 				frame.setVisible(true); // Hacer visible la ventana
 			} catch (Exception e) {
