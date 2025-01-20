@@ -19,6 +19,7 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.List;
 import java.awt.event.ActionEvent;
 
 public class VenatanaGestionJugadores extends JFrame implements ActionListener, WindowListener{
@@ -29,7 +30,10 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 	private JButton btnEliminar;
 	private JButton btnModificar;
 	private JList<Jugador> lstJugadores;
-	public static DefaultListModel<Jugador> dlm;
+	private static DefaultListModel<Jugador> dlm;
+	private boolean modificado = false;
+	private boolean error = false;
+
 	
 	private JTextField tfNombre;
 	private JTextField tfApellidos;
@@ -88,21 +92,21 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 		btnEliminar.addActionListener(this);
 		body.add(btnEliminar, "cell 0 1,growx");
 		
-		 lstJugadores = new JList();
-		body.add(lstJugadores, "cell 0 2,grow");
-		
 		//********************************
 		//Modelo de la lista
 		//********************************
 		// creo el modelo de datos de la lista
 		dlm = new DefaultListModel<Jugador>();
 		// creo la lista
-		lstJugadores = new JList<Jugador>(dlm);
+		lstJugadores = new JList<>(dlm);
 		// asocio el modelo de datos a la lista
 		lstJugadores.setModel(dlm);
 		
 		// Permitir seleccion multiple
 		lstJugadores.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+		body.add(lstJugadores, "cell 0 2,grow");
+		
 		
 		JLabel lblApellidos = new JLabel("Apellidos: ");
 		body.add(lblApellidos, "cell 0 0");
@@ -172,15 +176,42 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 			apellidos = tfApellidos.getText().trim();
 			
 			// comprobamos que no haya ningun campo de texto vacío
-			if (nombre.isEmpty() || apellidos.isEmpty()) {
-				JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios", "Error",JOptionPane.ERROR_MESSAGE);
+			if (nombre.isEmpty() ||apellidos.isEmpty()) {
+				JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios :(", "Error",JOptionPane.ERROR_MESSAGE);
+				error = true;
 			}else {
+				// creamos el objeto
+				Jugador j = new Jugador(nombre,apellidos);
+				// lo añadimos al dlm
 				
+				dlm.addElement(j);
+					
+				
+				//indicamos que los valores han sido modificados
+				modificado = true;
+
 			}
 			
 		}else if(o == btnEliminar) {
 			
+			// obtenemos los elementos seleccionados de la lista
+			List<Jugador> ValSelec = lstJugadores.getSelectedValuesList();
+			int[] IndSelec = lstJugadores.getSelectedIndices();
+			
+			if (IndSelec.length <= 0) {
+				JOptionPane.showMessageDialog(this,(String)"No hay valores seleccionados ","error",JOptionPane.ERROR_MESSAGE);
+			}else {
+				// ELIMINAMOS LOS USUARIOS DEL DLM
+				Jugador jugador;
+				for (int i = IndSelec.length - 1; i >= 0; i--) {
+					jugador = ValSelec.get(i);
+					dlm.removeElementAt(IndSelec[i]);
+				}	
+			}
+			
 		}else if(o == btnModificar) {
+			
+			
 			
 		}
 	}
