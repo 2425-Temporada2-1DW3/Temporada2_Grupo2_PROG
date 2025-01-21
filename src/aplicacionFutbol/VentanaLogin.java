@@ -166,11 +166,11 @@ public class VentanaLogin extends JFrame implements ActionListener{
                 		} else {
                 			//Si coincide se inicializa la main con el rol del usuario
                 			RolSesion = usuario.getRol();
-                			JOptionPane.showMessageDialog(null, "Bienvenido "+username); // Muestra un mensaje de error si las credenciales son incorrectas.
+                			JOptionPane.showMessageDialog(null, "Bienvenido/a "+username); // Muestra un mensaje de error si las credenciales son incorrectas.
+                			System.out.println("Se ha iniciado sesion con el usuario: "+username+" y el rol "+RolSesion);
                             VentanaMain ventanaRol = new VentanaMain(RolSesion); // Crea una nueva ventana para el admin
                             ventanaRol.setVisible(true); // Hace visible la ventana del admin
-                            dispose(); // Cierra la ventana actual
-                            break;
+                            dispose();                            
                 		}
                 		//El usuario No coincide con ninguno de la lista
                 		}

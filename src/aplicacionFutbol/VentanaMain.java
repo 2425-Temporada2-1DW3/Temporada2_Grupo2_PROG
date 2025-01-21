@@ -164,11 +164,11 @@ public class VentanaMain extends JFrame {
 	private final JPanel panel_1_1 = new JPanel();
 	private final JComboBox cbTemporadas = new JComboBox();
 	private final JButton btnVerTemporada = new JButton("Ver Temporada");
-	private final JButton btnNewButton = new JButton("Crear temporada");
+	private final JButton btnCrearTemporada = new JButton("Crear temporada");
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
 	private final JButton btnEquipos = new JButton("Equipos");
-	private final JButton btnCrearUsuario = new JButton("Crear Usuario");
+	private final JButton btnUsuarios = new JButton("Usuarios");
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -462,14 +462,14 @@ public class VentanaMain extends JFrame {
 		
 		panel_1_1.add(btnVerTemporada);
 		
-		panel_1_1.add(btnNewButton);
+		panel_1_1.add(btnCrearTemporada);
 		
 		contentPane.add(panel_2, BorderLayout.SOUTH);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
 		panel_2.add(panel_3, BorderLayout.EAST);
 		panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		btnCrearUsuario.addActionListener(new ActionListener() {
+		btnUsuarios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CrearUsuario cu = new CrearUsuario(RolSesion);
 				// la muestro
@@ -477,12 +477,16 @@ public class VentanaMain extends JFrame {
 			}
 		});
 		
-		panel_3.add(btnCrearUsuario);
+		panel_3.add(btnUsuarios);
 		
 		panel_3.add(btnEquipos);
 		panel_2.add(lblRol, BorderLayout.WEST);
 		try {
 			lblRol.setText("Rol: " + VentanaLogin.RolSesion);
+			if (RolSesion.equals("Usuario")){
+				btnUsuarios.setVisible(false);
+				btnCrearTemporada.setVisible(false);
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -493,6 +497,7 @@ public class VentanaMain extends JFrame {
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
+	
 
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
@@ -514,6 +519,19 @@ public class VentanaMain extends JFrame {
 				return puntosComparar; // Retornar comparación de puntos
 			}
 		});
+		
+		System.out.println("Nombre equipo 1 "+listaEquipos.get(0).getNombre());
+		System.out.println("Nombre equipo 2 "+listaEquipos.get(1).getNombre());
+		System.out.println("Nombre equipo 3 "+listaEquipos.get(2).getNombre());
+		System.out.println("Nombre equipo 4 "+listaEquipos.get(3).getNombre());
+		System.out.println("Nombre equipo 5 "+listaEquipos.get(4).getNombre());
+		System.out.println("Nombre equipo 6 "+listaEquipos.get(5).getNombre());
+		
+		String[][] matrizEquipos = {
+	            {"1", "2", "3"},
+	            {"4", "5", "6"},
+	            {"7", "8", "9"}
+	        };
 
 		modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
 		for (int i = 0; i < listaEquipos.size(); i++) { // Iterar sobre la lista de equipos
