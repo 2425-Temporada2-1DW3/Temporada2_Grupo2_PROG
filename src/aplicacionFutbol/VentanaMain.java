@@ -9,6 +9,7 @@ import java.awt.Image; // Clase para manejar imágenes
 import java.awt.Toolkit; // Clase para obtener recursos del sistema
 import java.awt.event.FocusAdapter; // Clase para manejar eventos de enfoque
 import java.awt.event.FocusEvent; // Clase para eventos de enfoque
+import java.io.File;
 import java.util.ArrayList; // Clase para manejar listas dinámicas
 import java.util.Collections; // Clase para colecciones de objetos
 import java.util.Comparator; // Clase para comparar objetos
@@ -27,6 +28,18 @@ import javax.swing.JTable; // Clase para crear tablas
 import javax.swing.JTextField; // Clase para crear campos de texto
 import javax.swing.border.EmptyBorder; // Clase para manejar bordes vacíos
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.awt.FlowLayout;
 import java.awt.Component;
 import javax.swing.SwingConstants;
@@ -164,11 +177,11 @@ public class VentanaMain extends JFrame {
 	private final JPanel panel_1_1 = new JPanel();
 	private final JComboBox cbTemporadas = new JComboBox();
 	private final JButton btnVerTemporada = new JButton("Ver Temporada");
-	private final JButton btnNewButton = new JButton("Crear temporada");
+	private final JButton btnCrearTemporada = new JButton("Crear temporada");
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
 	private final JButton btnEquipos = new JButton("Equipos");
-	private final JButton btnCrearUsuario = new JButton("Crear Usuario");
+	private final JButton btnUsuarios = new JButton("Usuarios");
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -419,6 +432,7 @@ public class VentanaMain extends JFrame {
 		btnAtras.setForeground(Color.WHITE); // Color del texto del botón
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				VentanaLogin.RolSesion = "Usuario";
 				VentanaLogin vl = new VentanaLogin();
 				// la muestro
 				vl.setVisible(true);
@@ -462,14 +476,14 @@ public class VentanaMain extends JFrame {
 		
 		panel_1_1.add(btnVerTemporada);
 		
-		panel_1_1.add(btnNewButton);
+		panel_1_1.add(btnCrearTemporada);
 		
 		contentPane.add(panel_2, BorderLayout.SOUTH);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
 		panel_2.add(panel_3, BorderLayout.EAST);
 		panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		btnCrearUsuario.addActionListener(new ActionListener() {
+		btnUsuarios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CrearUsuario cu = new CrearUsuario(RolSesion);
 				// la muestro
@@ -477,12 +491,16 @@ public class VentanaMain extends JFrame {
 			}
 		});
 		
-		panel_3.add(btnCrearUsuario);
+		panel_3.add(btnUsuarios);
 		
 		panel_3.add(btnEquipos);
 		panel_2.add(lblRol, BorderLayout.WEST);
 		try {
 			lblRol.setText("Rol: " + VentanaLogin.RolSesion);
+			if (RolSesion.equals("Usuario")){
+				btnUsuarios.setVisible(false);
+				btnCrearTemporada.setVisible(false);
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -493,6 +511,7 @@ public class VentanaMain extends JFrame {
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
+	
 
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
@@ -514,7 +533,121 @@ public class VentanaMain extends JFrame {
 				return puntosComparar; // Retornar comparación de puntos
 			}
 		});
+		//Inicializamos la temporada actual
+		int temporadaActual = 0;
+		//Iniciamos la matriz vacia solo con las posiciones
+		String[][][] matrizEquipos = {
+				{
+	         	   {"1", "", "", "", "", ""},
+	         	   {"2", "", "", "", "", ""},
+	         	   {"3", "", "", "", "", ""},
+	         	   {"4", "", "", "", "", ""},
+	         	   {"5", "", "", "", "", ""},
+	         	   {"6", "", "", "", "", ""}
+				},
+				{
+					{"1", "2024", "", "", "", ""},
+					{"2", "2024", "", "", "", ""},
+					{"3", "", "", "", "", ""},
+					{"4", "", "", "", "", ""},
+					{"5", "", "", "", "", ""},
+					{"6", "", "", "", "", ""}
+				},
+				{
+					{"1", "2025", "", "", "", ""},
+					{"2", "2025", "", "", "", ""},
+					{"3", "", "", "", "", ""},
+					{"4", "", "", "", "", ""},
+					{"5", "", "", "", "", ""},
+					{"6", "", "", "", "", ""}
+				},
+		};
+		
+		String[] temporadas = {"2023", "2024", "2025"};
+		
+		
+		//Se rellena la matriz con los datos correspondientes
+		for (int i = 0; i< listaEquipos.size(); i++) {
+			matrizEquipos[temporadaActual][i][1]  = listaEquipos.get(i).getNombre();
+			matrizEquipos[temporadaActual][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
+			matrizEquipos[temporadaActual][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
+			matrizEquipos[temporadaActual][i][4]  = String.valueOf(listaEquipos.get(i).getGolesContra());
+			matrizEquipos[temporadaActual][i][5]  = String.valueOf(listaEquipos.get(i).getDiferenciaGoles());
+		}
+		
+		//muestra la matriz en la consola
+		
+		for (int i = 0; i< listaEquipos.size(); i++) {
+			for (int j = 0; j<6; j++) {
+					System.out.print(matrizEquipos[temporadaActual][i][j]+" ");
+			}
+			System.out.println("");
+		}
+		System.out.println("");
+		
+		//Se genera el archivo xml
+		try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
 
+            Element rootElement = doc.createElement("liga");
+            doc.appendChild(rootElement);
+
+            for (int t = 0; t < matrizEquipos.length; t++) {
+                Element temporada = doc.createElement("temporada");
+                rootElement.appendChild(temporada);
+
+                Element nombreTemporada = doc.createElement("nombre");
+                nombreTemporada.appendChild(doc.createTextNode(temporadas[t]));
+                temporada.appendChild(nombreTemporada);
+
+                for (String[] row : matrizEquipos[t]) {
+                    Element equipo = doc.createElement("equipo");
+                    temporada.appendChild(equipo);
+
+                    Element posicion = doc.createElement("ranking");
+                    posicion.appendChild(doc.createTextNode(row[0]));
+                    equipo.appendChild(posicion);
+
+                    Element nombre = doc.createElement("nombre");
+                    nombre.appendChild(doc.createTextNode(row[1]));
+                    equipo.appendChild(nombre);
+
+                    Element puntos = doc.createElement("puntos");
+                    puntos.appendChild(doc.createTextNode(row[2]));
+                    equipo.appendChild(puntos);
+
+                    Element golesFavor = doc.createElement("golesFavor");
+                    golesFavor.appendChild(doc.createTextNode(row[3]));
+                    equipo.appendChild(golesFavor);
+
+                    Element golesContra = doc.createElement("golesContra");
+                    golesContra.appendChild(doc.createTextNode(row[4]));
+                    equipo.appendChild(golesContra);
+
+                    Element diferenciaGoles = doc.createElement("diferenciaGoles");
+                    diferenciaGoles.appendChild(doc.createTextNode(row[5]));
+                    equipo.appendChild(diferenciaGoles);
+                }
+            }
+
+            // Especifica la ruta absoluta para guardar el archivo XML
+            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(filePath));
+            transformer.transform(source, result);
+
+            System.out.println("Archivo XML guardado en " + filePath);
+
+        } catch (ParserConfigurationException | TransformerException e) {
+            e.printStackTrace();
+        }
+		
+		
+		
 		modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
 		for (int i = 0; i < listaEquipos.size(); i++) { // Iterar sobre la lista de equipos
 			Equipo equipo = listaEquipos.get(i); // Obtener el equipo actual
