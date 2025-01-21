@@ -59,6 +59,7 @@ public class VentanaMain extends JFrame {
 	private static final long serialVersionUID = 16765566646456546L; // Identificador de versión de la clase
 	private JPanel contentPane; // Panel principal que contendrá todos los componentes de la ventana
 
+	public int temporadaActual;
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
@@ -166,7 +167,6 @@ public class VentanaMain extends JFrame {
 	private final JLabel lblNewLabel = new JLabel("vs"); // Etiqueta para mostrar "vs" entre equipos
 	private final JLabel lblNewLabel_1 = new JLabel("vs");
 	private final JLabel lblNewLabel_2 = new JLabel("vs");
-	private final JLabel lblNewLabel_3 = new JLabel(" ");
 	private final JLabel lblNewLabel_4 = new JLabel(" ");
 	private final JLabel lblNewLabel_5 = new JLabel(" ");
 	private final JLabel lblNewLabel_6 = new JLabel(" ");
@@ -176,7 +176,6 @@ public class VentanaMain extends JFrame {
 	private final JLabel lblNewLabel_10 = new JLabel(" ");
 	private final JPanel panel_1_1 = new JPanel();
 	private final JComboBox cbTemporadas = new JComboBox();
-	private final JButton btnVerTemporada = new JButton("Ver Temporada");
 	private final JButton btnIniciarTemporada = new JButton("Iniciar temporada");
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
@@ -358,8 +357,7 @@ public class VentanaMain extends JFrame {
 
 		panel_1.add(lblNewLabel); // Añadir etiqueta "vs" entre los equipos
 		panel_1.add(golesVisitante_1); // Añadir campo de texto para goles del equipo visitante 1
-		panel_1.add(lblVisitante_1); // Añadir etiqueta para el equipo visitante 1
-		panel_1.add(lblNewLabel_3); // Añadir etiqueta vacía para separación
+		panel_1.add(lblVisitante_1);
 		panel_1.add(lblNewLabel_4); // Añadir etiqueta vacía para separación
 		panel_1.add(lblLocal_2); // Añadir etiqueta para el equipo local 2
 		golesLocal_2.setEditable(!modoSoloLectura); // Hacer editable el campo si no está en modo solo lectura
@@ -473,8 +471,15 @@ public class VentanaMain extends JFrame {
 		panel_1_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		panel_1_1.add(cbTemporadas);
+		int temporada=2023;
+		cbTemporadas.addItem(2023); // Añadir temporadas a la JComboBox
+		cbTemporadas.addItem(2024);
+		cbTemporadas.addItem(2025);
 		
-		panel_1_1.add(btnVerTemporada);
+		cbTemporadas.addActionListener(e -> {
+			temporadaActual = cbTemporadas.getSelectedIndex(); // Actualizar jornada actual
+			mostrarJornadaActual(); // Actualiza la vista
+		});
 		
 		btnIniciarTemporada.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -543,7 +548,6 @@ public class VentanaMain extends JFrame {
 			}
 		});
 		//Inicializamos la temporada actual
-		int temporadaActual = 0;
 		//Iniciamos la matriz vacia solo con las posiciones
 		String[][][] matrizEquipos = {
 				{
@@ -577,18 +581,18 @@ public class VentanaMain extends JFrame {
 		
 		//Se rellena la matriz con los datos correspondientes
 		for (int i = 0; i< listaEquipos.size(); i++) {
-			matrizEquipos[temporadaActual][i][1]  = listaEquipos.get(i).getNombre();
-			matrizEquipos[temporadaActual][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
-			matrizEquipos[temporadaActual][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
-			matrizEquipos[temporadaActual][i][4]  = String.valueOf(listaEquipos.get(i).getGolesContra());
-			matrizEquipos[temporadaActual][i][5]  = String.valueOf(listaEquipos.get(i).getDiferenciaGoles());
+			matrizEquipos[temporadaActual-2023][i][1]  = listaEquipos.get(i).getNombre();
+			matrizEquipos[temporadaActual-2023][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
+			matrizEquipos[temporadaActual-2023][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
+			matrizEquipos[temporadaActual-2023][i][4]  = String.valueOf(listaEquipos.get(i).getGolesContra());
+			matrizEquipos[temporadaActual-2023][i][5]  = String.valueOf(listaEquipos.get(i).getDiferenciaGoles());
 		}
 		
 		//muestra la matriz en la consola
 		
 		for (int i = 0; i< listaEquipos.size(); i++) {
 			for (int j = 0; j<6; j++) {
-					System.out.print(matrizEquipos[temporadaActual][i][j]+" ");
+					System.out.print(matrizEquipos[temporadaActual-2023][i][j]+" ");
 			}
 			System.out.println("");
 		}
