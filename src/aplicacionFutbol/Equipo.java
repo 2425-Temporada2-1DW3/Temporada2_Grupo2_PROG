@@ -13,8 +13,11 @@ public class Equipo implements Serializable{
 	private List<Jugador> jugadores;
 	
 	
+	// constructor equipo vacio
 	
-	// constructor lleno
+	
+	
+	// constructor equipo  lleno
 	public Equipo(String nombre, Jugador j1, Jugador j2, Jugador j3, Jugador j4, Jugador j5) {
 			this.nombre= nombre;
 			this.jugadores.add(j1);
