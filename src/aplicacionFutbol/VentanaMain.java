@@ -506,7 +506,7 @@ public class VentanaMain extends JFrame {
 			lblRol.setText("Rol: " + VentanaLogin.RolSesion);
 			if (RolSesion.equals("Usuario")){
 				btnUsuarios.setVisible(false);
-				btnCrearTemporada.setVisible(false);
+				btnIniciarTemporada.setVisible(false);
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
