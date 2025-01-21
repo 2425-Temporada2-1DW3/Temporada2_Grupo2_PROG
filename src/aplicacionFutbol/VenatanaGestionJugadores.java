@@ -33,7 +33,7 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 	private static DefaultListModel<Jugador> dlm;
 	private boolean modificado = false;
 	private boolean error = false;
-
+	private boolean modificando = false;
 	
 	private JTextField tfNombre;
 	private JTextField tfApellidos;
@@ -172,48 +172,94 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 		String nombre;
 		String apellidos;
 		if(o == btnAñadir) {
-			nombre = tfNombre.getText().trim();
-			apellidos = tfApellidos.getText().trim();
 			
-			// comprobamos que no haya ningun campo de texto vacío
-			if (nombre.isEmpty() ||apellidos.isEmpty()) {
-				JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios :(", "Error",JOptionPane.ERROR_MESSAGE);
-				error = true;
-			}else {
-				// creamos el objeto
-				Jugador j = new Jugador(nombre,apellidos);
-				// lo añadimos al dlm
+			if (modificando == false) {
+				nombre = tfNombre.getText().trim();
+				apellidos = tfApellidos.getText().trim();
 				
-				dlm.addElement(j);
+				// comprobamos que no haya ningun campo de texto vacío
+				if (nombre.isEmpty() ||apellidos.isEmpty()) {
+					JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios :(", "Error",JOptionPane.ERROR_MESSAGE);
+					error = true;
+				}else {
+					// creamos el objeto
+					Jugador j = new Jugador(nombre,apellidos);
+					// lo añadimos al dlm
+					dlm.addElement(j);
+					// limpiamos los textfields
+					tfNombre.setText("");
+					tfApellidos.setText("");
 					
-				
-				//indicamos que los valores han sido modificados
-				modificado = true;
+					//indicamos que los valores han sido modificados
+					modificado = true;
 
+				}
 			}
+			
 			
 		}else if(o == btnEliminar) {
-			
-			// obtenemos los elementos seleccionados de la lista
-			List<Jugador> ValSelec = lstJugadores.getSelectedValuesList();
-			int[] IndSelec = lstJugadores.getSelectedIndices();
-			
-			if (IndSelec.length <= 0) {
-				JOptionPane.showMessageDialog(this,(String)"No hay valores seleccionados ","error",JOptionPane.ERROR_MESSAGE);
-			}else {
-				// ELIMINAMOS LOS USUARIOS DEL DLM
-				Jugador jugador;
-				for (int i = IndSelec.length - 1; i >= 0; i--) {
-					jugador = ValSelec.get(i);
-					dlm.removeElementAt(IndSelec[i]);
-				}	
+			if (modificando == false) {
+				// obtenemos los elementos seleccionados de la lista
+				List<Jugador> ValSelec = lstJugadores.getSelectedValuesList();
+				int[] IndSelec = lstJugadores.getSelectedIndices();
+				
+				if (IndSelec.length <= 0) {
+					JOptionPane.showMessageDialog(this,(String)"No hay valores seleccionados ","error",JOptionPane.ERROR_MESSAGE);
+				}else {
+					// ELIMINAMOS LOS USUARIOS DEL DLM
+					Jugador jugador;
+					for (int i = IndSelec.length - 1; i >= 0; i--) {
+						jugador = ValSelec.get(i);
+						dlm.removeElementAt(IndSelec[i]);
+					}	
+				}
 			}
+			
 			
 		}else if(o == btnModificar) {
 			
+			// empezamos indicando que no hay errores
+			error = false;
+			// obtenemos los valores seleccionados
+			List<Jugador> ValSelec = lstJugadores.getSelectedValuesList();
+			int[] IndSelec = lstJugadores.getSelectedIndices();
+			Jugador j;
+			
+			// compruebo que solo haya un elemento seleccionado
+			if (IndSelec.length <= 0 || IndSelec.length > 1) {
+				JOptionPane.showMessageDialog(this,(String)"debe selecionar un judador","error",JOptionPane.ERROR_MESSAGE);
+				//error = true;
+			}else {
+				// obtengo el objeto seleccionado 
+				j = ValSelec.get(0);
+				
+				if (modificando == false) {
+					
+					
+					tfNombre.setText(j.getNombre());
+					tfApellidos.setText(j.getApellidos());
+					btnModificar.setText("Aplicar cambios");
+					
+					modificando = true;
+				
+		
+			}else if (modificando == true) {
+				
+				System.out.println("holaaaaaaaa");
+				System.out.println(tfNombre.getText().trim());
+				System.out.println(tfApellidos.getText().trim());
+				j.setNombre(tfNombre.getText().trim());
+				j.setApellidos(tfApellidos.getText().trim());
+				
+				dlm.set(IndSelec[0],j);
+				modificando = false;
+				btnModificar.setText("Modificar");
+			}
+			}
 			
 			
 		}
+			
 	}
 
 }
