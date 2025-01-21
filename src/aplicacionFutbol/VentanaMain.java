@@ -39,6 +39,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.awt.FlowLayout;
 import java.awt.Component;
@@ -60,6 +61,7 @@ public class VentanaMain extends JFrame {
 	private JPanel contentPane; // Panel principal que contendrá todos los componentes de la ventana
 
 	public int temporadaActual;
+	String temporada;
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
@@ -182,6 +184,28 @@ public class VentanaMain extends JFrame {
 	private final JButton btnEquipos = new JButton("Equipos");
 	private final JButton btnUsuarios = new JButton("Usuarios");
 	private final JLabel lbltemporada = new JLabel("Temporada ");
+	
+	//Se inicializa el array
+	String[][][] matrizEquipos= {
+			{
+				{"1", "2023", "2023", "2023", "2023", "2023"},
+				{"2", "2023", "2023", "2023", "2023", "2023"},
+				{"3", "2023", "2023", "2023", "2023", "2023"},
+				{"4", "2023", "2023", "2023", "2023", "2023"},
+				{"5", "2023", "2023", "2023", "2023", "2023"},
+				{"6", "2023", "2023", "2023", "2023", "2023"}
+			},
+			{
+				{"1", "", "", "", "", ""},
+				{"2", "", "", "", "", ""},
+				{"3", "", "", "", "", ""},
+				{"4", "", "", "", "", ""},
+				{"5", "", "", "", "", ""},
+				{"6", "", "", "", "", ""}
+			},
+			};
+					
+					String[] temporadas = {"2023", "2024"};
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -248,7 +272,90 @@ public class VentanaMain extends JFrame {
 			actualizarTablaClasificacion(); // Actualizar la tabla de clasificación
 			JOptionPane.showMessageDialog(this, "Resultados guardados correctamente."); // Mensaje de éxito
 			resultadosGuardados[jornadaActual] = true; // Marcar resultados como guardados para la jornada actual
+			generarXML();	
 		}
+	}
+
+	private void generarXML() {
+		//Se rellena la matriz con los datos correspondientes
+		for (int i = 0; i< listaEquipos.size(); i++) {
+			matrizEquipos[temporadaActual][i][1]  = listaEquipos.get(i).getNombre();
+			matrizEquipos[temporadaActual][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
+			matrizEquipos[temporadaActual][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
+			matrizEquipos[temporadaActual][i][4]  = String.valueOf(listaEquipos.get(i).getGolesContra());
+			matrizEquipos[temporadaActual][i][5]  = String.valueOf(listaEquipos.get(i).getDiferenciaGoles());
+		}
+		
+		//muestra la matriz en la consola
+		System.out.println("Index de la temporada: "+temporadaActual);
+		for (int i = 0; i< listaEquipos.size(); i++) {
+			for (int j = 0; j<6; j++) {
+					System.out.print(matrizEquipos[temporadaActual][i][j]+" ");
+			}
+			System.out.println("");
+		}
+		System.out.println("");
+		
+		//Se genera el archivo xml
+		try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement("liga");
+            doc.appendChild(rootElement);
+
+            for (int t = 0; t < matrizEquipos.length; t++) {
+                Element temporada = doc.createElement("temporada");
+                rootElement.appendChild(temporada);
+
+                Element nombreTemporada = doc.createElement("nombre");
+                nombreTemporada.appendChild(doc.createTextNode(temporadas[t]));
+                temporada.appendChild(nombreTemporada);
+
+                for (String[] row : matrizEquipos[t]) {
+                    Element equipo = doc.createElement("equipo");
+                    temporada.appendChild(equipo);
+
+                    Element posicion = doc.createElement("ranking");
+                    posicion.appendChild(doc.createTextNode(row[0]));
+                    equipo.appendChild(posicion);
+
+                    Element nombre = doc.createElement("nombre");
+                    nombre.appendChild(doc.createTextNode(row[1]));
+                    equipo.appendChild(nombre);
+
+                    Element puntos = doc.createElement("puntos");
+                    puntos.appendChild(doc.createTextNode(row[2]));
+                    equipo.appendChild(puntos);
+
+                    Element golesFavor = doc.createElement("golesFavor");
+                    golesFavor.appendChild(doc.createTextNode(row[3]));
+                    equipo.appendChild(golesFavor);
+
+                    Element golesContra = doc.createElement("golesContra");
+                    golesContra.appendChild(doc.createTextNode(row[4]));
+                    equipo.appendChild(golesContra);
+
+                    Element diferenciaGoles = doc.createElement("diferenciaGoles");
+                    diferenciaGoles.appendChild(doc.createTextNode(row[5]));
+                    equipo.appendChild(diferenciaGoles);
+                }
+            }
+
+            // Especifica la ruta absoluta para guardar el archivo XML
+            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(filePath));
+            transformer.transform(source, result);
+
+            System.out.println("Archivo XML guardado en " + filePath);
+
+        } catch (ParserConfigurationException | TransformerException e) {
+            e.printStackTrace();
+        }
 	}
 
 	// Método para actualizar los datos de los equipos después de un partido
@@ -474,14 +581,20 @@ public class VentanaMain extends JFrame {
 		panel_1_1.add(lbltemporada);
 		
 		panel_1_1.add(cbTemporadas);
-		int temporada=2023;
-		cbTemporadas.addItem(2023); // Añadir temporadas a la JComboBox
-		cbTemporadas.addItem(2024);
-		cbTemporadas.addItem(2025);
+				
+		cbTemporadas.addItem("Temporada 2023"); // Añadir temporadas a la JComboBox
+		cbTemporadas.addItem("Temporada 2024");
 		
+		//Iniciamos la temporada por defecto
+		temporadaActual = 1;
+		cbTemporadas.setSelectedIndex(temporadaActual);
+		temporada = String.valueOf(cbTemporadas.getSelectedItem());
+		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", String.valueOf(temporada = temporada.substring(10))); // Actualiza la vista
+				
 		cbTemporadas.addActionListener(e -> {
-			temporadaActual = cbTemporadas.getSelectedIndex(); // Actualizar jornada actual
-			mostrarJornadaActual(); // Actualiza la vista
+			temporada = String.valueOf(cbTemporadas.getSelectedItem());
+			modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
+			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", String.valueOf(temporada = temporada.substring(10))); // Actualiza la vista
 		});
 		
 		btnIniciarTemporada.addActionListener(new ActionListener() {
@@ -526,10 +639,55 @@ public class VentanaMain extends JFrame {
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
-	
+		
+	private static void cargarDatosDesdeXML(DefaultTableModel model, String filePath, String temporadaSeleccionada) {
+        try {
+            File xmlFile = new File(filePath);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            doc.getDocumentElement().normalize();
 
-	
-	
+            NodeList temporadas = doc.getElementsByTagName("temporada");
+            for (int i = 0; i < temporadas.getLength(); i++) {
+                if (temporadas.item(i).getFirstChild().getTextContent().equals(temporadaSeleccionada)) {
+                    NodeList equipos = temporadas.item(i).getChildNodes();
+                    for (int j = 1; j < equipos.getLength(); j++) {
+                        if (equipos.item(j).getNodeName().equals("equipo")) {
+                            NodeList datosEquipo = equipos.item(j).getChildNodes();
+                            String[] rowData = new String[6];
+                            for (int k = 0; k < datosEquipo.getLength(); k++) {
+                                switch (datosEquipo.item(k).getNodeName()) {
+                                    case "ranking":
+                                        rowData[0] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "nombre":
+                                        rowData[1] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "puntos":
+                                        rowData[2] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "golesFavor":
+                                        rowData[3] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "golesContra":
+                                        rowData[4] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "diferenciaGoles":
+                                        rowData[5] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                }
+                            }
+                            model.addRow(rowData);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
 		// Ordenar la lista de equipos según los puntos, goles a favor y diferencia de goles
@@ -550,119 +708,6 @@ public class VentanaMain extends JFrame {
 				return puntosComparar; // Retornar comparación de puntos
 			}
 		});
-		//Inicializamos la temporada actual
-		//Iniciamos la matriz vacia solo con las posiciones
-		String[][][] matrizEquipos = {
-				{
-	         	   {"1", "", "", "", "", ""},
-	         	   {"2", "", "", "", "", ""},
-	         	   {"3", "", "", "", "", ""},
-	         	   {"4", "", "", "", "", ""},
-	         	   {"5", "", "", "", "", ""},
-	         	   {"6", "", "", "", "", ""}
-				},
-				{
-					{"1", "2024", "", "", "", ""},
-					{"2", "2024", "", "", "", ""},
-					{"3", "", "", "", "", ""},
-					{"4", "", "", "", "", ""},
-					{"5", "", "", "", "", ""},
-					{"6", "", "", "", "", ""}
-				},
-				{
-					{"1", "2025", "", "", "", ""},
-					{"2", "2025", "", "", "", ""},
-					{"3", "", "", "", "", ""},
-					{"4", "", "", "", "", ""},
-					{"5", "", "", "", "", ""},
-					{"6", "", "", "", "", ""}
-				},
-		};
-		
-		String[] temporadas = {"2023", "2024", "2025"};
-		
-		
-		//Se rellena la matriz con los datos correspondientes
-		for (int i = 0; i< listaEquipos.size(); i++) {
-			matrizEquipos[temporadaActual-2023][i][1]  = listaEquipos.get(i).getNombre();
-			matrizEquipos[temporadaActual-2023][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
-			matrizEquipos[temporadaActual-2023][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
-			matrizEquipos[temporadaActual-2023][i][4]  = String.valueOf(listaEquipos.get(i).getGolesContra());
-			matrizEquipos[temporadaActual-2023][i][5]  = String.valueOf(listaEquipos.get(i).getDiferenciaGoles());
-		}
-		
-		//muestra la matriz en la consola
-		
-		for (int i = 0; i< listaEquipos.size(); i++) {
-			for (int j = 0; j<6; j++) {
-					System.out.print(matrizEquipos[temporadaActual-2023][i][j]+" ");
-			}
-			System.out.println("");
-		}
-		System.out.println("");
-		
-		//Se genera el archivo xml
-		try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            Document doc = docBuilder.newDocument();
-
-            Element rootElement = doc.createElement("liga");
-            doc.appendChild(rootElement);
-
-            for (int t = 0; t < matrizEquipos.length; t++) {
-                Element temporada = doc.createElement("temporada");
-                rootElement.appendChild(temporada);
-
-                Element nombreTemporada = doc.createElement("nombre");
-                nombreTemporada.appendChild(doc.createTextNode(temporadas[t]));
-                temporada.appendChild(nombreTemporada);
-
-                for (String[] row : matrizEquipos[t]) {
-                    Element equipo = doc.createElement("equipo");
-                    temporada.appendChild(equipo);
-
-                    Element posicion = doc.createElement("ranking");
-                    posicion.appendChild(doc.createTextNode(row[0]));
-                    equipo.appendChild(posicion);
-
-                    Element nombre = doc.createElement("nombre");
-                    nombre.appendChild(doc.createTextNode(row[1]));
-                    equipo.appendChild(nombre);
-
-                    Element puntos = doc.createElement("puntos");
-                    puntos.appendChild(doc.createTextNode(row[2]));
-                    equipo.appendChild(puntos);
-
-                    Element golesFavor = doc.createElement("golesFavor");
-                    golesFavor.appendChild(doc.createTextNode(row[3]));
-                    equipo.appendChild(golesFavor);
-
-                    Element golesContra = doc.createElement("golesContra");
-                    golesContra.appendChild(doc.createTextNode(row[4]));
-                    equipo.appendChild(golesContra);
-
-                    Element diferenciaGoles = doc.createElement("diferenciaGoles");
-                    diferenciaGoles.appendChild(doc.createTextNode(row[5]));
-                    equipo.appendChild(diferenciaGoles);
-                }
-            }
-
-            // Especifica la ruta absoluta para guardar el archivo XML
-            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(filePath));
-            transformer.transform(source, result);
-
-            System.out.println("Archivo XML guardado en " + filePath);
-
-        } catch (ParserConfigurationException | TransformerException e) {
-            e.printStackTrace();
-        }
-		
-		
 		
 		modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
 		for (int i = 0; i < listaEquipos.size(); i++) { // Iterar sobre la lista de equipos
