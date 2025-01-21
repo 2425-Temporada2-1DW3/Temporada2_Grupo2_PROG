@@ -284,6 +284,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 				// mensaje informativo
 				if (VentanaLogin.RolSesion.equals("Usuario")){	
 				JOptionPane.showMessageDialog(this, (String) "Usuario "+tfNombreStr+" creado correctamente", "Error",JOptionPane.INFORMATION_MESSAGE);
+				GrabarUsuarios("Usuario.ser", CrearUsuario.dlm);
 				dispose();
 				} else {
 				JOptionPane.showMessageDialog(this, (String) "Creando un usuario "+tfNombreStr+" con el rol "+rolSelec, "Error",JOptionPane.INFORMATION_MESSAGE);
