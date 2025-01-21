@@ -181,6 +181,7 @@ public class VentanaMain extends JFrame {
 	private final JPanel panel_3 = new JPanel();
 	private final JButton btnEquipos = new JButton("Equipos");
 	private final JButton btnUsuarios = new JButton("Usuarios");
+	private final JLabel lbltemporada = new JLabel("Temporada ");
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -469,6 +470,8 @@ public class VentanaMain extends JFrame {
 		
 		contentPane.add(panel_1_1, BorderLayout.NORTH);
 		panel_1_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		panel_1_1.add(lbltemporada);
 		
 		panel_1_1.add(cbTemporadas);
 		int temporada=2023;
