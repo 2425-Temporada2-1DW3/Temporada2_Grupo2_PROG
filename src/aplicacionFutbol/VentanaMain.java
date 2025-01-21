@@ -177,7 +177,7 @@ public class VentanaMain extends JFrame {
 	private final JPanel panel_1_1 = new JPanel();
 	private final JComboBox cbTemporadas = new JComboBox();
 	private final JButton btnVerTemporada = new JButton("Ver Temporada");
-	private final JButton btnCrearTemporada = new JButton("Crear temporada");
+	private final JButton btnIniciarTemporada = new JButton("Iniciar temporada");
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
 	private final JButton btnEquipos = new JButton("Equipos");
@@ -476,7 +476,14 @@ public class VentanaMain extends JFrame {
 		
 		panel_1_1.add(btnVerTemporada);
 		
-		panel_1_1.add(btnCrearTemporada);
+		btnIniciarTemporada.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				// abrir VentanaIniciarTemporada
+			}
+		});
+		
+		panel_1_1.add(btnIniciarTemporada);
 		
 		contentPane.add(panel_2, BorderLayout.SOUTH);
 		panel_2.setLayout(new BorderLayout(0, 0));
@@ -513,6 +520,8 @@ public class VentanaMain extends JFrame {
 	}
 	
 
+	
+	
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
 		// Ordenar la lista de equipos según los puntos, goles a favor y diferencia de goles

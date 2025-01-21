@@ -250,7 +250,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 				ValidData = false;
 				JOptionPane.showMessageDialog(this, (String) "Las contraseñas no coinciden._"+password1Str+"_"+password2Str+"_", "Error",JOptionPane.ERROR_MESSAGE);
 			}else {
-				// ¡¡¡¡FALTA!!!! comprobamos que no sea un usuario que ya existse
+				// comprobamos que no sea un usuario que ya existse
 				Usuario usuario;
 				for (int i = dlm.getSize() -1 ; i >= 0; i--) {
 					usuario = dlm.getElementAt(i); // Obtenemos el usuario
