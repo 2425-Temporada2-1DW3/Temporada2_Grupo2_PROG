@@ -432,6 +432,7 @@ public class VentanaMain extends JFrame {
 		btnAtras.setForeground(Color.WHITE); // Color del texto del botón
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				VentanaLogin.RolSesion = "Usuario";
 				VentanaLogin vl = new VentanaLogin();
 				// la muestro
 				vl.setVisible(true);
