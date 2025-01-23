@@ -93,7 +93,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		 */
 		this.addWindowListener(this); 
 		// IMPEDIMOS QUE LA VENTANA SE CIERRE AL PULSAR LA X Y AÑADO EL WINDOWLISTENER
-		setMinimumSize(new Dimension(525, 350));
+		setMinimumSize(new Dimension(525, 270));
 		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
 		setBounds(100, 100, 525, 584);
 		contentPane = new JPanel();
@@ -205,6 +205,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 			cbRoles.setVisible(false);
 			lstUsuarios.setVisible(false);
 			btnBorrarUsuarios.setVisible(false);
+			setBounds(100, 100, 525, 270);
 		}
 
 	}
