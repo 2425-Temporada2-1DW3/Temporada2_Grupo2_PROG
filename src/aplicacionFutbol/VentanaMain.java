@@ -641,9 +641,9 @@ public class VentanaMain extends JFrame {
 			modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
 			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
 			if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
-				modoSoloLectura=true;
+				CambiarSoloLectura(false);
 			} else {
-				modoSoloLectura=false;
+				CambiarSoloLectura(true);
 			}
 		});
 		
@@ -688,6 +688,15 @@ public class VentanaMain extends JFrame {
 
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
+	}
+	private void CambiarSoloLectura(boolean editable) {
+		golesLocal_1.setEnabled(editable);
+		golesVisitante_1.setEnabled(editable);
+		golesLocal_2.setEnabled(editable);
+		golesVisitante_2.setEnabled(editable);
+		golesLocal_3.setEnabled(editable);
+		golesVisitante_3.setEnabled(editable);
+		
 	}
 	
 	// Agregar un KeyListener al JTextField
