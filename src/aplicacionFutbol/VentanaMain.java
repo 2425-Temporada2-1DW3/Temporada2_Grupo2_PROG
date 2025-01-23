@@ -9,6 +9,8 @@ import java.awt.Image; // Clase para manejar imágenes
 import java.awt.Toolkit; // Clase para obtener recursos del sistema
 import java.awt.event.FocusAdapter; // Clase para manejar eventos de enfoque
 import java.awt.event.FocusEvent; // Clase para eventos de enfoque
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList; // Clase para manejar listas dinámicas
 import java.util.Collections; // Clase para colecciones de objetos
@@ -62,6 +64,7 @@ public class VentanaMain extends JFrame {
 
 	public int temporadaActual;
 	String temporada;
+	public int jornadaEnJuego = 0;
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
@@ -80,7 +83,7 @@ public class VentanaMain extends JFrame {
 	private JTextField golesVisitante_2 = new JTextField(5);
 	private JTextField golesLocal_3 = new JTextField(5);
 	private JTextField golesVisitante_3 = new JTextField(5);
-
+	
 	// Lista de equipos que participan en la liga
 	String[] equipos = { "athletic", "Barcelona", "Madrid", "Alaves", "Osasuna", "Eibar" };
 	private int jornadaActual = 0; // Índice de la jornada actual
@@ -204,8 +207,29 @@ public class VentanaMain extends JFrame {
 				{"6", "", "", "", "", ""}
 			},
 			};
-					
-					String[] temporadas = {"2023", "2024"};
+	
+	
+	String[] temporadas = {"2023", "2024"};
+	
+	
+	String[][][] matrizJornadas= {
+			{
+				{"1", "2023", "2023", "2023", "2023", "2023"},
+				{"2", "2023", "2023", "2023", "2023", "2023"},
+				{"3", "2023", "2023", "2023", "2023", "2023"},
+				{"4", "2023", "2023", "2023", "2023", "2023"},
+				{"5", "2023", "2023", "2023", "2023", "2023"},
+				{"6", "2023", "2023", "2023", "2023", "2023"}
+			},
+			{
+				{"1", "", "", "", "", ""},
+				{"2", "", "", "", "", ""},
+				{"3", "", "", "", "", ""},
+				{"4", "", "", "", "", ""},
+				{"5", "", "", "", "", ""},
+				{"6", "", "", "", "", ""}
+			},
+			};
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -228,7 +252,7 @@ public class VentanaMain extends JFrame {
 						// Si ambos campos están vacíos, mostrar un mensaje
 						JOptionPane.showMessageDialog(this,
 								"Los equipos " + partidos[i][0] + " y " + partidos[i][1] + " no han jugado.");
-						continue; // Salir del bucle y no guardar resultados para este partido
+						return; // Salir del método y no guardar resultados para este partido
 					}
 
 					resultadoLocal = Integer.parseInt(golesLocal_1.getText()); // Obtener goles del equipo local
@@ -237,7 +261,7 @@ public class VentanaMain extends JFrame {
 					if (golesLocal_2.getText().isEmpty() && golesVisitante_2.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(this,
 								"Los equipos " + partidos[i][0] + " y " + partidos[i][1] + " no han jugado.");
-						continue; // Continuar si no se han jugado
+						return; // Salir del método y no guardar resultados para este partido
 					}
 
 					resultadoLocal = Integer.parseInt(golesLocal_2.getText());
@@ -246,7 +270,7 @@ public class VentanaMain extends JFrame {
 					if (golesLocal_3.getText().isEmpty() && golesVisitante_3.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(this,
 								"Los equipos " + partidos[i][0] + " y " + partidos[i][1] + " no han jugado.");
-						continue; // Continuar si no se han jugado
+						return; // Salir del método y no guardar resultados para este partido
 					}
 
 					resultadoLocal = Integer.parseInt(golesLocal_3.getText());
@@ -270,6 +294,7 @@ public class VentanaMain extends JFrame {
 		// Solo mostrar mensaje si al menos un partido fue jugado
 		if (partidoJugado) {
 			actualizarTablaClasificacion(); // Actualizar la tabla de clasificación
+			jornadaEnJuego=jornadaActual+1;
 			JOptionPane.showMessageDialog(this, "Resultados guardados correctamente."); // Mensaje de éxito
 			resultadosGuardados[jornadaActual] = true; // Marcar resultados como guardados para la jornada actual
 			generarXML();	
@@ -352,6 +377,7 @@ public class VentanaMain extends JFrame {
             transformer.transform(source, result);
 
             System.out.println("Archivo XML guardado en " + filePath);
+            System.out.println("");
 
         } catch (ParserConfigurationException | TransformerException e) {
             e.printStackTrace();
@@ -421,15 +447,16 @@ public class VentanaMain extends JFrame {
 			mostrarJornadaActual(); // Actualiza la vista
 		});
 		
-				JButton btnAnterior = new JButton(""); // Botón para ir a la jornada anterior
-				btnAnterior.setIcon(new ImageIcon("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\left.png"));
-				btnAnterior.setBackground(new Color(255, 255, 255)); // Color de fondo del botón
-				btnAnterior.setForeground(Color.WHITE); // Color del texto del botón
-				btnAnterior.addActionListener(e -> {
-					jornadaActual = Math.max(jornadaActual - 1, 0); // Decrementa pero no pasa de 0
-					mostrarJornadaActual(); // Actualiza la vista
-				});
-				panel.add(btnAnterior); // Añadir botón anterior al panel
+		JButton btnAnterior = new JButton(""); // Botón para ir a la jornada anterior
+		btnAnterior.setIcon(new ImageIcon("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\left.png"));
+		btnAnterior.setBackground(new Color(255, 255, 255)); // Color de fondo del botón
+		btnAnterior.setForeground(Color.WHITE); // Color del texto del botón
+		btnAnterior.addActionListener(e -> {
+				jornadaActual = Math.max(jornadaActual - 1, 0); // Decrementa pero no pasa de 0
+				mostrarJornadaActual(); // Actualiza la vista
+		});
+		
+		panel.add(btnAnterior); // Añadir botón anterior al panel
 
 		panel.add(comboBox); // Añadir JComboBox al panel
 		JButton btnSiguiente = new JButton(""); // Botón para ir a la siguiente jornada
@@ -437,9 +464,16 @@ public class VentanaMain extends JFrame {
 		btnSiguiente.setBackground(new Color(255, 255, 255)); // Color de fondo del botón
 		btnSiguiente.setForeground(Color.WHITE); // Color del texto del botón
 		btnSiguiente.addActionListener(e -> {
-			jornadaActual = Math.min(jornadaActual + 1, jornadas.size() - 1); // Incrementa pero no pasa del tamaño de jornadas
-			mostrarJornadaActual(); // Actualiza la vista
+			//if(resultadosGuardados[jornadaActual]) {
+				jornadaActual = Math.min(jornadaActual + 1, jornadas.size() - 1); // Incrementa pero no pasa del tamaño de jornadas
+				mostrarJornadaActual(); // Actualiza la vista
+			/*} else {
+				JOptionPane.showMessageDialog(this,
+					"La jornada " + (jornadaActual + 1) + " todavia no ha sido jugada.");
+			}*/
 		});
+		
+		
 
 		panel.add(btnSiguiente); // Añadir botón siguiente al panel
 		JPanel panel_1 = new JPanel(); // Panel para mostrar los resultados de los partidos
@@ -527,6 +561,14 @@ public class VentanaMain extends JFrame {
 			golesVisitante_3.setText("");
 		});
 
+		// Agregar la validación a los JTextField
+		agregarValidacionJornada(golesLocal_1);
+		agregarValidacionJornada(golesVisitante_1);
+		agregarValidacionJornada(golesLocal_2);
+		agregarValidacionJornada(golesVisitante_2);
+		agregarValidacionJornada(golesLocal_3);
+		agregarValidacionJornada(golesVisitante_3);
+		
 		if (modoSoloLectura) {
 			btnRestablecer.setEnabled(false); // Deshabilitar el botón si está en modo solo lectura
 		}
@@ -586,15 +628,23 @@ public class VentanaMain extends JFrame {
 		cbTemporadas.addItem("Temporada 2024");
 		
 		//Iniciamos la temporada por defecto
-		temporadaActual = 1;
+		temporadaActual = temporadas.length-1; //La temporada actual es la ultima temporada dentro del programa
 		cbTemporadas.setSelectedIndex(temporadaActual);
 		temporada = String.valueOf(cbTemporadas.getSelectedItem());
-		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", String.valueOf(temporada = temporada.substring(10))); // Actualiza la vista
+		temporada = temporada.substring(10);
+		
+		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
 				
 		cbTemporadas.addActionListener(e -> {
 			temporada = String.valueOf(cbTemporadas.getSelectedItem());
+			temporada = temporada.substring(10);
 			modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
-			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", String.valueOf(temporada = temporada.substring(10))); // Actualiza la vista
+			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
+			if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
+				CambiarSoloLectura(false);
+			} else {
+				CambiarSoloLectura(true);
+			}
 		});
 		
 		btnIniciarTemporada.addActionListener(new ActionListener() {
@@ -639,6 +689,30 @@ public class VentanaMain extends JFrame {
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
+	private void CambiarSoloLectura(boolean editable) {
+		golesLocal_1.setEnabled(editable);
+		golesVisitante_1.setEnabled(editable);
+		golesLocal_2.setEnabled(editable);
+		golesVisitante_2.setEnabled(editable);
+		golesLocal_3.setEnabled(editable);
+		golesVisitante_3.setEnabled(editable);
+		
+	}
+	
+	// Agregar un KeyListener al JTextField
+			private void agregarValidacionJornada(JTextField textField) {
+				textField.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if (jornadaActual != jornadaEnJuego) {
+						// Mostrar mensaje de error
+						JOptionPane.showMessageDialog(tablaClasificacion,"La jornada " + (jornadaEnJuego + 1) + " todavia no ha sido jugada."); // Mensaje de éxito
+						// Consumir el evento para evitar que se escriba texto
+						e.consume();
+					}
+				}
+			});
+			}
 		
 	private static void cargarDatosDesdeXML(DefaultTableModel model, String filePath, String temporadaSeleccionada) {
         try {
