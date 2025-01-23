@@ -19,6 +19,13 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 import java.awt.event.ActionEvent;
 
@@ -121,6 +128,8 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 		
 		JPanel footer = new JPanel();
 		contentPane.add(footer, BorderLayout.SOUTH);
+		
+		cargarJugadores("Jugadores.ser");
 	}
 
 	@Override
@@ -172,7 +181,6 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 		String nombre;
 		String apellidos;
 		if(o == btnAñadir) {
-			
 			if (modificando == false) {
 				nombre = tfNombre.getText().trim();
 				apellidos = tfApellidos.getText().trim();
@@ -192,7 +200,7 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 					
 					//indicamos que los valores han sido modificados
 					modificado = true;
-
+					GrabarJugadores("Jugadores.ser", dlm);
 				}
 			}
 			
@@ -211,7 +219,8 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 					for (int i = IndSelec.length - 1; i >= 0; i--) {
 						jugador = ValSelec.get(i);
 						dlm.removeElementAt(IndSelec[i]);
-					}	
+					}
+					GrabarJugadores("Jugadores.ser", dlm);
 				}
 			}
 			
@@ -244,16 +253,16 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 				
 		
 			}else if (modificando == true) {
-				
-				System.out.println("holaaaaaaaa");
-				System.out.println(tfNombre.getText().trim());
-				System.out.println(tfApellidos.getText().trim());
+
+				//System.out.println(tfNombre.getText().trim());
+				//System.out.println(tfApellidos.getText().trim());
 				j.setNombre(tfNombre.getText().trim());
 				j.setApellidos(tfApellidos.getText().trim());
 				
 				dlm.set(IndSelec[0],j);
 				modificando = false;
 				btnModificar.setText("Modificar");
+				GrabarJugadores("Jugadores.ser", dlm);
 			}
 			}
 			
@@ -261,5 +270,45 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 		}
 			
 	}
+	
+	
+	/*
+	 * FUNCION DE CARGAR USUARIOS .SER ----> DLM
+	 *---------------------------------------------------------------------------------------- */
+	public void cargarJugadores(String archivo) {
+		 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+	            // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
+	            Object obj;
+	            while ((obj = ois.readObject()) != null) {
+	                if (obj instanceof Jugador) {
+	                    Jugador jugador = (Jugador) obj;
+	                    dlm.addElement(jugador);
+	                }
+	            }
+	        } catch (EOFException e) {
+	            // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
+	            System.out.println("Archivo cargado completamente.");
+	        } catch (FileNotFoundException e) {
+	            System.err.println("El archivo no existe: " + archivo);
+	        } catch (IOException | ClassNotFoundException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	/*
+	 * GRABA LOS USUARIOS DLM ---> .SER
+	 * -----------------------------------------------------------------------------------------------------------------*/
+	public static void GrabarJugadores(String nombreArchivo, DefaultListModel<Jugador> dlm) {
+		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
+			 for (int i = 0; i < dlm.size(); i++) {
+	                oos.writeObject(dlm.get(i)); // Escribir cada objeto
+	            }
+	            System.out.println("Lista guardada en objetos.ser");
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	
 
 }
