@@ -206,9 +206,8 @@ public class VentanaMain extends JFrame {
 				{"5", "", "", "", "", ""},
 				{"6", "", "", "", "", ""}
 			},
-			};
-		
-	String[][][][] matrizJornadas; // [temporada][jornada][marcador local][marcador visitante] en 3 lineas
+		};
+	
 	String[] temporadas = {"2023", "2024"};
 
 	// Método para guardar los resultados de los partidos
@@ -253,14 +252,16 @@ public class VentanaMain extends JFrame {
 						return; // Salir del método y no guardar resultados para este partido
 					}
 
-					resultadoLocal = Integer.parseInt(golesLocal_3.getText());
-					resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
+				
 				}
 
 				// Guardar resultados
+				resultadoLocal = Integer.parseInt(golesLocal_3.getText());
+				resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
 				resultados.get(jornadaActual)[i][0] = resultadoLocal; // Guardar goles del local
 				resultados.get(jornadaActual)[i][1] = resultadoVisitante; // Guardar goles del visitante
-
+				generarJornadasXML(temporadaActual,jornadaActual,i,resultadoLocal,resultadoVisitante);
+				
 				// Actualizar equipos con los resultados
 				actualizarEquipos(partidos[i][0], resultadoLocal, resultadoVisitante);
 				actualizarEquipos(partidos[i][1], resultadoVisitante, resultadoLocal);
@@ -292,34 +293,17 @@ public class VentanaMain extends JFrame {
 	}
 
 	private void generarXML() {
-		generarTemporadasXML();
-		generarJornadasXML();		
+		generarTemporadasXML();		
 	}
 
-	private void generarJornadasXML() {
-		//Se rellena la matriz con los datos correspondientes
-		for (int i = 0; i<10; i++) { //para las 10 jornadas                  jornada, partido, equipo
-			matrizJornadas[temporadaActual][i][0][0]  = String.valueOf(resultados.get(i)[0][0]); //partido 1
-			matrizJornadas[temporadaActual][i][0][0]  = String.valueOf(resultados.get(i)[0][1]); //partido 2
-			matrizJornadas[temporadaActual][i][0][0]  = String.valueOf(resultados.get(i)[1][0]); //partido 3
-			matrizJornadas[temporadaActual][i][0][0]  = String.valueOf(resultados.get(i)[1][1]); //partido 4
-			matrizJornadas[temporadaActual][i][0][0]  = String.valueOf(resultados.get(i)[2][0]); //partido 5
-			matrizJornadas[temporadaActual][i][0][0]  = String.valueOf(resultados.get(i)[2][1]); //partido 6
-		}
-		
-		//muestra la matriz en la consola
-				for (int i = 0; i<10; i++) {
-					System.out.println("Index de la jornada: "+i);
-					for (int j = 0; j<6; j++) {
-							System.out.print(matrizJornadas[temporadaActual][i][j]+" ");
-					}
-				}
-				System.out.println("");
+	private void generarJornadasXML(int temporada, int jornada, int partido, int marcadorLocal, int marcadorVisitante) {
+		partido.setTemporadaNumero(temporada);
 	}
 
 	private void generarTemporadasXML() {
 		//Se rellena la matriz con los datos correspondientes
 		for (int i = 0; i< listaEquipos.size(); i++) {
+			matrizEquipos[temporadaActual][i][0]  = String.valueOf(i+1);
 			matrizEquipos[temporadaActual][i][1]  = listaEquipos.get(i).getNombre();
 			matrizEquipos[temporadaActual][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
 			matrizEquipos[temporadaActual][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
@@ -704,13 +688,6 @@ public class VentanaMain extends JFrame {
 
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
-		
-		for(int j=0;j<10;j++) { //rellenamos todas las jornadas para la temporada index=0 (2023)
-			matrizJornadas[0][j][0][0]="2023";
-			matrizJornadas[0][j][0][1]="2023";
-			matrizJornadas[0][j][1][0]="2023";
-			matrizJornadas[0][j][1][1]="2023";
-		}
 	}
 	private void CambiarJornadaEditable() {
 		if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
