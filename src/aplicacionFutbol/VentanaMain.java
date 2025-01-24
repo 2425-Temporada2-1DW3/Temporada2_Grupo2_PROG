@@ -11,13 +11,21 @@ import java.awt.event.FocusAdapter; // Clase para manejar eventos de enfoque
 import java.awt.event.FocusEvent; // Clase para eventos de enfoque
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList; // Clase para manejar listas dinámicas
 import java.util.Collections; // Clase para colecciones de objetos
 import java.util.Comparator; // Clase para comparar objetos
 import java.util.List; // Interfaz para listas
 
 import javax.swing.BoxLayout; // Clase para gestionar un diseño de caja
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon; // Clase para manejar iconos de imagen
 import javax.swing.JButton; // Clase para crear botones
 import javax.swing.JComboBox; // Clase para crear listas desplegables
@@ -65,6 +73,7 @@ public class VentanaMain extends JFrame {
 	public int temporadaActual;
 	String temporada;
 	public int jornadaEnJuego = 0;
+	private static ArrayList<Partido> matrizJornadas = new ArrayList<>();
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
@@ -94,6 +103,7 @@ public class VentanaMain extends JFrame {
 	private boolean modoSoloLectura = false; // Variable para controlar el modo de solo lectura
 	private final JComboBox<String> comboBox = new JComboBox<>(); // ComboBox para seleccionar la jornada
 	private JLabel lblRol = new JLabel(); // JLabel para mostrar el rol del usuario
+	Partido partido;
 
 	// Método para cargar el escudo de un equipo dado su nombre
 	private ImageIcon cargarEscudo(String equipo) {
@@ -110,7 +120,8 @@ public class VentanaMain extends JFrame {
 		}
 		String[][] partidos = jornadas.get(jornadaActual); // Acceso a los partidos de la jornada actual
 		int[][] goles = resultados.get(jornadaActual); // Acceso a los resultados de la jornada actual
-
+		cargarJornadas("Jornadas.ser");
+		
 		// Cargar y asignar los nombres y escudos a los JLabels de los equipos
 		lblLocal_1.setText(partidos[0][0]);
 		lblLocal_1.setIcon(cargarEscudo(partidos[0][0]));
@@ -206,30 +217,9 @@ public class VentanaMain extends JFrame {
 				{"5", "", "", "", "", ""},
 				{"6", "", "", "", "", ""}
 			},
-			};
-	
+		};
 	
 	String[] temporadas = {"2023", "2024"};
-	
-	
-	String[][][] matrizJornadas= {
-			{
-				{"1", "2023", "2023", "2023", "2023", "2023"},
-				{"2", "2023", "2023", "2023", "2023", "2023"},
-				{"3", "2023", "2023", "2023", "2023", "2023"},
-				{"4", "2023", "2023", "2023", "2023", "2023"},
-				{"5", "2023", "2023", "2023", "2023", "2023"},
-				{"6", "2023", "2023", "2023", "2023", "2023"}
-			},
-			{
-				{"1", "", "", "", "", ""},
-				{"2", "", "", "", "", ""},
-				{"3", "", "", "", "", ""},
-				{"4", "", "", "", "", ""},
-				{"5", "", "", "", "", ""},
-				{"6", "", "", "", "", ""}
-			},
-			};
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -273,14 +263,16 @@ public class VentanaMain extends JFrame {
 						return; // Salir del método y no guardar resultados para este partido
 					}
 
-					resultadoLocal = Integer.parseInt(golesLocal_3.getText());
-					resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
+				
 				}
 
 				// Guardar resultados
+				resultadoLocal = Integer.parseInt(golesLocal_3.getText());
+				resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
 				resultados.get(jornadaActual)[i][0] = resultadoLocal; // Guardar goles del local
 				resultados.get(jornadaActual)[i][1] = resultadoVisitante; // Guardar goles del visitante
-
+				generarJornadasXML(temporadaActual,jornadaActual,i,resultadoLocal,resultadoVisitante);
+				
 				// Actualizar equipos con los resultados
 				actualizarEquipos(partidos[i][0], resultadoLocal, resultadoVisitante);
 				actualizarEquipos(partidos[i][1], resultadoVisitante, resultadoLocal);
@@ -293,17 +285,33 @@ public class VentanaMain extends JFrame {
 
 		// Solo mostrar mensaje si al menos un partido fue jugado
 		if (partidoJugado) {
-			actualizarTablaClasificacion(); // Actualizar la tabla de clasificación
-			jornadaEnJuego=jornadaActual+1;
-			JOptionPane.showMessageDialog(this, "Resultados guardados correctamente."); // Mensaje de éxito
-			resultadosGuardados[jornadaActual] = true; // Marcar resultados como guardados para la jornada actual
-			generarXML();	
+			int opcion = JOptionPane.showConfirmDialog(this,(String)"Seguro que quiere guardar los restultados para esta temporada?","Info",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null);
+			switch (opcion) {
+				case JOptionPane.YES_OPTION: // opcion "Si"
+					//guarda
+					actualizarTablaClasificacion(); // Actualizar la tabla de clasificación
+					jornadaEnJuego=jornadaActual+1;
+					JOptionPane.showMessageDialog(this, "Resultados guardados correctamente."); // Mensaje de éxito
+					resultadosGuardados[jornadaActual] = true; // Marcar resultados como guardados para la jornada actual
+					CambiarJornadaEditable();
+					generarXML();
+					break;
+				case JOptionPane.NO_OPTION: // opcion "No"
+				case JOptionPane.CANCEL_OPTION: 
+				case JOptionPane.CLOSED_OPTION:
+			}
 		}
+	}
+
+	private void generarJornadasXML(int temporada, int jornada, int numeroPartido, int marcadorLocal, int marcadorVisitante) {
+		partido = new Partido(temporada, jornada, numeroPartido, marcadorLocal, marcadorVisitante);
+		GrabarJornadas("Jornadas.ser", null);
 	}
 
 	private void generarXML() {
 		//Se rellena la matriz con los datos correspondientes
 		for (int i = 0; i< listaEquipos.size(); i++) {
+			matrizEquipos[temporadaActual][i][0]  = String.valueOf(i+1);
 			matrizEquipos[temporadaActual][i][1]  = listaEquipos.get(i).getNombre();
 			matrizEquipos[temporadaActual][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
 			matrizEquipos[temporadaActual][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
@@ -454,6 +462,7 @@ public class VentanaMain extends JFrame {
 		btnAnterior.addActionListener(e -> {
 				jornadaActual = Math.max(jornadaActual - 1, 0); // Decrementa pero no pasa de 0
 				mostrarJornadaActual(); // Actualiza la vista
+				CambiarJornadaEditable();
 		});
 		
 		panel.add(btnAnterior); // Añadir botón anterior al panel
@@ -464,13 +473,9 @@ public class VentanaMain extends JFrame {
 		btnSiguiente.setBackground(new Color(255, 255, 255)); // Color de fondo del botón
 		btnSiguiente.setForeground(Color.WHITE); // Color del texto del botón
 		btnSiguiente.addActionListener(e -> {
-			//if(resultadosGuardados[jornadaActual]) {
 				jornadaActual = Math.min(jornadaActual + 1, jornadas.size() - 1); // Incrementa pero no pasa del tamaño de jornadas
 				mostrarJornadaActual(); // Actualiza la vista
-			/*} else {
-				JOptionPane.showMessageDialog(this,
-					"La jornada " + (jornadaActual + 1) + " todavia no ha sido jugada.");
-			}*/
+				CambiarJornadaEditable();
 		});
 		
 		
@@ -545,7 +550,7 @@ public class VentanaMain extends JFrame {
 		btnGuardar.setBackground(new Color(0, 120, 215)); // Color de fondo del botón
 		btnGuardar.setForeground(Color.WHITE); // Color del texto del botón
 		btnGuardar.setEnabled(!modoSoloLectura); // Habilitar el botón si no está en modo solo lectura
-		btnGuardar.addActionListener(e -> guardarResultados()); // Acción al hacer clic en el botón para guardar resultados
+		btnGuardar.addActionListener(e -> guardarResultados());// Acción al hacer clic en el botón para guardar resultados
 		panel_1.add(lblNewLabel_7); // Añadir etiqueta vacía para separación
 		panel_1.add(btnGuardar); // Añadir botón de guardar al panel
 		JButton btnRestablecer = new JButton("Restablecer"); // Botón para restablecer los campos de entrada
@@ -553,12 +558,27 @@ public class VentanaMain extends JFrame {
 		btnRestablecer.setForeground(Color.WHITE); // Color del texto del botón
 		btnRestablecer.addActionListener(e -> {
 			// Limpiar los campos de texto de goles
-			golesLocal_1.setText("");
-			golesVisitante_1.setText("");
-			golesLocal_2.setText("");
-			golesVisitante_2.setText("");
-			golesLocal_3.setText("");
-			golesVisitante_3.setText("");
+			int opcion = JOptionPane.showConfirmDialog(this,(String)"Seguro que quiere restablecer la temporadas?","Info",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null);
+			switch (opcion) {
+				case JOptionPane.YES_OPTION: // opcion "Si"
+					// restablece
+					golesLocal_1.setText("");
+					golesVisitante_1.setText("");
+					golesLocal_2.setText("");
+					golesVisitante_2.setText("");
+					golesLocal_3.setText("");
+					golesVisitante_3.setText("");
+					jornadaEnJuego=0;
+					for(int i=0;i<10;i++) {
+						resultadosGuardados[i] = false;
+					}
+					CambiarJornadaEditable();
+					generarXML();
+					break;
+				case JOptionPane.NO_OPTION: // opcion "No"
+				case JOptionPane.CANCEL_OPTION: 
+				case JOptionPane.CLOSED_OPTION:
+			}	
 		});
 
 		// Agregar la validación a los JTextField
@@ -586,14 +606,6 @@ public class VentanaMain extends JFrame {
 				vl.setVisible(true);
 				dispose();
 			}
-			/*
-			 		btnCrearUsuario.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CrearUsuario cu = new CrearUsuario();
-				// la muestro
-				cu.setVisible(true);
-			}
-			 */
 		});
 
 		panel_1.add(lblNewLabel_10); // Añadir etiqueta vacía para separación
@@ -640,11 +652,7 @@ public class VentanaMain extends JFrame {
 			temporada = temporada.substring(10);
 			modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
 			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
-			if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
-				CambiarSoloLectura(false);
-			} else {
-				CambiarSoloLectura(true);
-			}
+			CambiarJornadaEditable();
 		});
 		
 		btnIniciarTemporada.addActionListener(new ActionListener() {
@@ -680,7 +688,6 @@ public class VentanaMain extends JFrame {
 				btnIniciarTemporada.setVisible(false);
 			}
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		generarPartidos(); // Generar los partidos al iniciar
@@ -689,13 +696,55 @@ public class VentanaMain extends JFrame {
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
+	
+	public static void cargarJornadas(String archivo) {
+		 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+	            // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
+	            Object obj;
+	            while ((obj = ois.readObject()) != null) {
+	                if (obj instanceof Partido) {
+	                    Partido partido = (Partido) obj;
+	                    matrizJornadas.addLast(partido);
+	                }
+	            }
+	        } catch (EOFException e) {
+	            // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
+	            System.out.println("Archivo cargado completamente.");
+	        } catch (FileNotFoundException e) {
+	            System.err.println("El archivo no existe: " + archivo);
+	        } catch (IOException | ClassNotFoundException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	public static void GrabarJornadas(String nombreArchivo, DefaultListModel<Partido> dlm) {
+		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
+			 for (int i = 0; i < dlm.size(); i++) {
+	                oos.writeObject(dlm.get(i)); // Escribir cada objeto
+	            }
+	            System.out.println("Lista guardada en objetos.ser");
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	private void CambiarJornadaEditable() {
+		if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
+			CambiarSoloLectura(true);					
+		} else if(!resultadosGuardados[jornadaActual]) {
+			CambiarSoloLectura(false);
+		} else {
+			CambiarSoloLectura(true);
+		}
+	}
+
 	private void CambiarSoloLectura(boolean editable) {
-		golesLocal_1.setEnabled(editable);
-		golesVisitante_1.setEnabled(editable);
-		golesLocal_2.setEnabled(editable);
-		golesVisitante_2.setEnabled(editable);
-		golesLocal_3.setEnabled(editable);
-		golesVisitante_3.setEnabled(editable);
+		golesLocal_1.setEnabled(!editable);
+		golesVisitante_1.setEnabled(!editable);
+		golesLocal_2.setEnabled(!editable);
+		golesVisitante_2.setEnabled(!editable);
+		golesLocal_3.setEnabled(!editable);
+		golesVisitante_3.setEnabled(!editable);
 		
 	}
 	
