@@ -91,7 +91,7 @@ public class CrearUsuario extends JFrame implements ActionListener, WindowListen
 		/*
 		 ELEMENTOS GRÁFICOS
 		 */
-		this.addWindowListener(this); 
+		this.addWindowListener(this);
 		// IMPEDIMOS QUE LA VENTANA SE CIERRE AL PULSAR LA X Y AÑADO EL WINDOWLISTENER
 		setMinimumSize(new Dimension(525, 270));
 		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\Login top image.png"));
