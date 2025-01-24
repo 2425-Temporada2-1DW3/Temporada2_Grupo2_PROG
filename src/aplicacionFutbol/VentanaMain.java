@@ -11,13 +11,21 @@ import java.awt.event.FocusAdapter; // Clase para manejar eventos de enfoque
 import java.awt.event.FocusEvent; // Clase para eventos de enfoque
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList; // Clase para manejar listas dinámicas
 import java.util.Collections; // Clase para colecciones de objetos
 import java.util.Comparator; // Clase para comparar objetos
 import java.util.List; // Interfaz para listas
 
 import javax.swing.BoxLayout; // Clase para gestionar un diseño de caja
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon; // Clase para manejar iconos de imagen
 import javax.swing.JButton; // Clase para crear botones
 import javax.swing.JComboBox; // Clase para crear listas desplegables
@@ -65,6 +73,7 @@ public class VentanaMain extends JFrame {
 	public int temporadaActual;
 	String temporada;
 	public int jornadaEnJuego = 0;
+	private static ArrayList<Partido> matrizJornadas = new ArrayList<>();
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
@@ -94,6 +103,7 @@ public class VentanaMain extends JFrame {
 	private boolean modoSoloLectura = false; // Variable para controlar el modo de solo lectura
 	private final JComboBox<String> comboBox = new JComboBox<>(); // ComboBox para seleccionar la jornada
 	private JLabel lblRol = new JLabel(); // JLabel para mostrar el rol del usuario
+	Partido partido;
 
 	// Método para cargar el escudo de un equipo dado su nombre
 	private ImageIcon cargarEscudo(String equipo) {
@@ -110,7 +120,8 @@ public class VentanaMain extends JFrame {
 		}
 		String[][] partidos = jornadas.get(jornadaActual); // Acceso a los partidos de la jornada actual
 		int[][] goles = resultados.get(jornadaActual); // Acceso a los resultados de la jornada actual
-
+		cargarJornadas("Jornadas.ser");
+		
 		// Cargar y asignar los nombres y escudos a los JLabels de los equipos
 		lblLocal_1.setText(partidos[0][0]);
 		lblLocal_1.setIcon(cargarEscudo(partidos[0][0]));
@@ -292,15 +303,12 @@ public class VentanaMain extends JFrame {
 		}
 	}
 
+	private void generarJornadasXML(int temporada, int jornada, int numeroPartido, int marcadorLocal, int marcadorVisitante) {
+		partido = new Partido(temporada, jornada, numeroPartido, marcadorLocal, marcadorVisitante);
+		GrabarJornadas("Jornadas.ser", null);
+	}
+
 	private void generarXML() {
-		generarTemporadasXML();		
-	}
-
-	private void generarJornadasXML(int temporada, int jornada, int partido, int marcadorLocal, int marcadorVisitante) {
-		partido.setTemporadaNumero(temporada);
-	}
-
-	private void generarTemporadasXML() {
 		//Se rellena la matriz con los datos correspondientes
 		for (int i = 0; i< listaEquipos.size(); i++) {
 			matrizEquipos[temporadaActual][i][0]  = String.valueOf(i+1);
@@ -680,7 +688,6 @@ public class VentanaMain extends JFrame {
 				btnIniciarTemporada.setVisible(false);
 			}
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		generarPartidos(); // Generar los partidos al iniciar
@@ -689,6 +696,38 @@ public class VentanaMain extends JFrame {
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
+	
+	public static void cargarJornadas(String archivo) {
+		 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+	            // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
+	            Object obj;
+	            while ((obj = ois.readObject()) != null) {
+	                if (obj instanceof Partido) {
+	                    Partido partido = (Partido) obj;
+	                    matrizJornadas.addLast(partido);
+	                }
+	            }
+	        } catch (EOFException e) {
+	            // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
+	            System.out.println("Archivo cargado completamente.");
+	        } catch (FileNotFoundException e) {
+	            System.err.println("El archivo no existe: " + archivo);
+	        } catch (IOException | ClassNotFoundException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	public static void GrabarJornadas(String nombreArchivo, DefaultListModel<Partido> dlm) {
+		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
+			 for (int i = 0; i < dlm.size(); i++) {
+	                oos.writeObject(dlm.get(i)); // Escribir cada objeto
+	            }
+	            System.out.println("Lista guardada en objetos.ser");
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
 	private void CambiarJornadaEditable() {
 		if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
 			CambiarSoloLectura(true);					

@@ -1,7 +1,13 @@
 package aplicacionFutbol;
 
-public class partido {
+import java.io.Serializable;
+
+public class Partido implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4919146540552823915L;
 	private int temporada;
 	private int jornada;
 	private int partido;
@@ -9,7 +15,7 @@ public class partido {
 	private int marcadorVisitante;
 	
 	// constructor manual
-	public partido(int t, int j, int p, int ml, int mv) {
+	public Partido(int t, int j, int p, int ml, int mv) {
 		this.temporada= t;
 		this.jornada = j;
 		this.partido = p;
