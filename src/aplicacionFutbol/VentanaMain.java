@@ -9,12 +9,23 @@ import java.awt.Image; // Clase para manejar imágenes
 import java.awt.Toolkit; // Clase para obtener recursos del sistema
 import java.awt.event.FocusAdapter; // Clase para manejar eventos de enfoque
 import java.awt.event.FocusEvent; // Clase para eventos de enfoque
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList; // Clase para manejar listas dinámicas
 import java.util.Collections; // Clase para colecciones de objetos
 import java.util.Comparator; // Clase para comparar objetos
 import java.util.List; // Interfaz para listas
 
 import javax.swing.BoxLayout; // Clase para gestionar un diseño de caja
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon; // Clase para manejar iconos de imagen
 import javax.swing.JButton; // Clase para crear botones
 import javax.swing.JComboBox; // Clase para crear listas desplegables
@@ -27,6 +38,19 @@ import javax.swing.JTable; // Clase para crear tablas
 import javax.swing.JTextField; // Clase para crear campos de texto
 import javax.swing.border.EmptyBorder; // Clase para manejar bordes vacíos
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.awt.FlowLayout;
 import java.awt.Component;
 import javax.swing.SwingConstants;
@@ -46,6 +70,10 @@ public class VentanaMain extends JFrame {
 	private static final long serialVersionUID = 16765566646456546L; // Identificador de versión de la clase
 	private JPanel contentPane; // Panel principal que contendrá todos los componentes de la ventana
 
+	public int temporadaActual;
+	String temporada;
+	public int jornadaEnJuego = 0;
+	private static ArrayList<Partido> matrizJornadas = new ArrayList<>();
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
@@ -64,7 +92,7 @@ public class VentanaMain extends JFrame {
 	private JTextField golesVisitante_2 = new JTextField(5);
 	private JTextField golesLocal_3 = new JTextField(5);
 	private JTextField golesVisitante_3 = new JTextField(5);
-
+	
 	// Lista de equipos que participan en la liga
 	String[] equipos = { "athletic", "Barcelona", "Madrid", "Alaves", "Osasuna", "Eibar" };
 	private int jornadaActual = 0; // Índice de la jornada actual
@@ -75,6 +103,7 @@ public class VentanaMain extends JFrame {
 	private boolean modoSoloLectura = false; // Variable para controlar el modo de solo lectura
 	private final JComboBox<String> comboBox = new JComboBox<>(); // ComboBox para seleccionar la jornada
 	private JLabel lblRol = new JLabel(); // JLabel para mostrar el rol del usuario
+	Partido partido;
 
 	// Método para cargar el escudo de un equipo dado su nombre
 	private ImageIcon cargarEscudo(String equipo) {
@@ -91,7 +120,8 @@ public class VentanaMain extends JFrame {
 		}
 		String[][] partidos = jornadas.get(jornadaActual); // Acceso a los partidos de la jornada actual
 		int[][] goles = resultados.get(jornadaActual); // Acceso a los resultados de la jornada actual
-
+		cargarJornadas("Jornadas.ser");
+		
 		// Cargar y asignar los nombres y escudos a los JLabels de los equipos
 		lblLocal_1.setText(partidos[0][0]);
 		lblLocal_1.setIcon(cargarEscudo(partidos[0][0]));
@@ -153,7 +183,6 @@ public class VentanaMain extends JFrame {
 	private final JLabel lblNewLabel = new JLabel("vs"); // Etiqueta para mostrar "vs" entre equipos
 	private final JLabel lblNewLabel_1 = new JLabel("vs");
 	private final JLabel lblNewLabel_2 = new JLabel("vs");
-	private final JLabel lblNewLabel_3 = new JLabel(" ");
 	private final JLabel lblNewLabel_4 = new JLabel(" ");
 	private final JLabel lblNewLabel_5 = new JLabel(" ");
 	private final JLabel lblNewLabel_6 = new JLabel(" ");
@@ -163,12 +192,34 @@ public class VentanaMain extends JFrame {
 	private final JLabel lblNewLabel_10 = new JLabel(" ");
 	private final JPanel panel_1_1 = new JPanel();
 	private final JComboBox cbTemporadas = new JComboBox();
-	private final JButton btnVerTemporada = new JButton("Ver Temporada");
-	private final JButton btnNewButton = new JButton("Crear temporada");
+	private final JButton btnIniciarTemporada = new JButton("Iniciar temporada");
 	private final JPanel panel_2 = new JPanel();
 	private final JPanel panel_3 = new JPanel();
-	private final JButton btnNewButton_2 = new JButton("New button");
-	private final JButton btnCrearUsuario = new JButton("Crear Usuario");
+	private final JButton btnEquipos = new JButton("Equipos");
+	private final JButton btnUsuarios = new JButton("Usuarios");
+	private final JLabel lbltemporada = new JLabel("Temporada ");
+	
+	//Se inicializa el array
+	String[][][] matrizEquipos= {
+			{
+				{"1", "2023", "2023", "2023", "2023", "2023"},
+				{"2", "2023", "2023", "2023", "2023", "2023"},
+				{"3", "2023", "2023", "2023", "2023", "2023"},
+				{"4", "2023", "2023", "2023", "2023", "2023"},
+				{"5", "2023", "2023", "2023", "2023", "2023"},
+				{"6", "2023", "2023", "2023", "2023", "2023"}
+			},
+			{
+				{"1", "", "", "", "", ""},
+				{"2", "", "", "", "", ""},
+				{"3", "", "", "", "", ""},
+				{"4", "", "", "", "", ""},
+				{"5", "", "", "", "", ""},
+				{"6", "", "", "", "", ""}
+			},
+		};
+	
+	String[] temporadas = {"2023", "2024"};
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -191,7 +242,7 @@ public class VentanaMain extends JFrame {
 						// Si ambos campos están vacíos, mostrar un mensaje
 						JOptionPane.showMessageDialog(this,
 								"Los equipos " + partidos[i][0] + " y " + partidos[i][1] + " no han jugado.");
-						continue; // Salir del bucle y no guardar resultados para este partido
+						return; // Salir del método y no guardar resultados para este partido
 					}
 
 					resultadoLocal = Integer.parseInt(golesLocal_1.getText()); // Obtener goles del equipo local
@@ -200,7 +251,7 @@ public class VentanaMain extends JFrame {
 					if (golesLocal_2.getText().isEmpty() && golesVisitante_2.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(this,
 								"Los equipos " + partidos[i][0] + " y " + partidos[i][1] + " no han jugado.");
-						continue; // Continuar si no se han jugado
+						return; // Salir del método y no guardar resultados para este partido
 					}
 
 					resultadoLocal = Integer.parseInt(golesLocal_2.getText());
@@ -209,17 +260,19 @@ public class VentanaMain extends JFrame {
 					if (golesLocal_3.getText().isEmpty() && golesVisitante_3.getText().isEmpty()) {
 						JOptionPane.showMessageDialog(this,
 								"Los equipos " + partidos[i][0] + " y " + partidos[i][1] + " no han jugado.");
-						continue; // Continuar si no se han jugado
+						return; // Salir del método y no guardar resultados para este partido
 					}
 
-					resultadoLocal = Integer.parseInt(golesLocal_3.getText());
-					resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
+				
 				}
 
 				// Guardar resultados
+				resultadoLocal = Integer.parseInt(golesLocal_3.getText());
+				resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
 				resultados.get(jornadaActual)[i][0] = resultadoLocal; // Guardar goles del local
 				resultados.get(jornadaActual)[i][1] = resultadoVisitante; // Guardar goles del visitante
-
+				generarJornadasXML(temporadaActual,jornadaActual,i,resultadoLocal,resultadoVisitante);
+				
 				// Actualizar equipos con los resultados
 				actualizarEquipos(partidos[i][0], resultadoLocal, resultadoVisitante);
 				actualizarEquipos(partidos[i][1], resultadoVisitante, resultadoLocal);
@@ -232,10 +285,111 @@ public class VentanaMain extends JFrame {
 
 		// Solo mostrar mensaje si al menos un partido fue jugado
 		if (partidoJugado) {
-			actualizarTablaClasificacion(); // Actualizar la tabla de clasificación
-			JOptionPane.showMessageDialog(this, "Resultados guardados correctamente."); // Mensaje de éxito
-			resultadosGuardados[jornadaActual] = true; // Marcar resultados como guardados para la jornada actual
+			int opcion = JOptionPane.showConfirmDialog(this,(String)"Seguro que quiere guardar los restultados para esta temporada?","Info",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null);
+			switch (opcion) {
+				case JOptionPane.YES_OPTION: // opcion "Si"
+					//guarda
+					actualizarTablaClasificacion(); // Actualizar la tabla de clasificación
+					jornadaEnJuego=jornadaActual+1;
+					JOptionPane.showMessageDialog(this, "Resultados guardados correctamente."); // Mensaje de éxito
+					resultadosGuardados[jornadaActual] = true; // Marcar resultados como guardados para la jornada actual
+					CambiarJornadaEditable();
+					generarXML();
+					break;
+				case JOptionPane.NO_OPTION: // opcion "No"
+				case JOptionPane.CANCEL_OPTION: 
+				case JOptionPane.CLOSED_OPTION:
+			}
 		}
+	}
+
+	private void generarJornadasXML(int temporada, int jornada, int numeroPartido, int marcadorLocal, int marcadorVisitante) {
+		partido = new Partido(temporada, jornada, numeroPartido, marcadorLocal, marcadorVisitante);
+		GrabarJornadas("Jornadas.ser", null);
+	}
+
+	private void generarXML() {
+		//Se rellena la matriz con los datos correspondientes
+		for (int i = 0; i< listaEquipos.size(); i++) {
+			matrizEquipos[temporadaActual][i][0]  = String.valueOf(i+1);
+			matrizEquipos[temporadaActual][i][1]  = listaEquipos.get(i).getNombre();
+			matrizEquipos[temporadaActual][i][2]  = String.valueOf(listaEquipos.get(i).getPuntos());
+			matrizEquipos[temporadaActual][i][3]  = String.valueOf(listaEquipos.get(i).getGolesFavor());
+			matrizEquipos[temporadaActual][i][4]  = String.valueOf(listaEquipos.get(i).getGolesContra());
+			matrizEquipos[temporadaActual][i][5]  = String.valueOf(listaEquipos.get(i).getDiferenciaGoles());
+		}
+		
+		//muestra la matriz en la consola
+		System.out.println("Index de la temporada: "+temporadaActual);
+		for (int i = 0; i< listaEquipos.size(); i++) {
+			for (int j = 0; j<6; j++) {
+					System.out.print(matrizEquipos[temporadaActual][i][j]+" ");
+			}
+			System.out.println("");
+		}
+		System.out.println("");
+		
+		//Se genera el archivo xml
+		try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement("liga");
+            doc.appendChild(rootElement);
+
+            for (int t = 0; t < matrizEquipos.length; t++) {
+                Element temporada = doc.createElement("temporada");
+                rootElement.appendChild(temporada);
+
+                Element nombreTemporada = doc.createElement("nombre");
+                nombreTemporada.appendChild(doc.createTextNode(temporadas[t]));
+                temporada.appendChild(nombreTemporada);
+
+                for (String[] row : matrizEquipos[t]) {
+                    Element equipo = doc.createElement("equipo");
+                    temporada.appendChild(equipo);
+
+                    Element posicion = doc.createElement("ranking");
+                    posicion.appendChild(doc.createTextNode(row[0]));
+                    equipo.appendChild(posicion);
+
+                    Element nombre = doc.createElement("nombre");
+                    nombre.appendChild(doc.createTextNode(row[1]));
+                    equipo.appendChild(nombre);
+
+                    Element puntos = doc.createElement("puntos");
+                    puntos.appendChild(doc.createTextNode(row[2]));
+                    equipo.appendChild(puntos);
+
+                    Element golesFavor = doc.createElement("golesFavor");
+                    golesFavor.appendChild(doc.createTextNode(row[3]));
+                    equipo.appendChild(golesFavor);
+
+                    Element golesContra = doc.createElement("golesContra");
+                    golesContra.appendChild(doc.createTextNode(row[4]));
+                    equipo.appendChild(golesContra);
+
+                    Element diferenciaGoles = doc.createElement("diferenciaGoles");
+                    diferenciaGoles.appendChild(doc.createTextNode(row[5]));
+                    equipo.appendChild(diferenciaGoles);
+                }
+            }
+
+            // Especifica la ruta absoluta para guardar el archivo XML
+            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(filePath));
+            transformer.transform(source, result);
+
+            System.out.println("Archivo XML guardado en " + filePath);
+            System.out.println("");
+
+        } catch (ParserConfigurationException | TransformerException e) {
+            e.printStackTrace();
+        }
 	}
 
 	// Método para actualizar los datos de los equipos después de un partido
@@ -257,8 +411,10 @@ public class VentanaMain extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
 			try {
-				String rolUsuario = "invitado"; // Cambia esto según sea necesario (admin, arbitro, invitado)
-				VentanaMain frame = new VentanaMain(rolUsuario); // Crear instancia de la ventana de resultados
+				String RolSesion = "Admin"; // Cambia esto según sea necesario (admin, arbitro, Usuario)
+				//Rol por defecto de la ventana
+				
+				VentanaMain frame = new VentanaMain(RolSesion); // Crear instancia de la ventana de resultados
 				frame.setVisible(true); // Hacer visible la ventana
 			} catch (Exception e) {
 				e.printStackTrace(); // Manejo de excepciones
@@ -267,10 +423,10 @@ public class VentanaMain extends JFrame {
 	}
 
 	// Constructor de la clase VentanaResultados
-	public VentanaMain(String rolUsuario) {
+	public VentanaMain(String RolSesion) {
 		setTitle("Resultados y clasificación"); // Título de la ventana
 		setIconImage(Toolkit.getDefaultToolkit().getImage("src/imagenes/balon.png")); // Icono de la ventana
-		this.modoSoloLectura = rolUsuario.equals("invitado"); // Modo solo lectura si es invitado
+		this.modoSoloLectura = RolSesion.equals("Usuario"); // Modo solo lectura si es Usuario
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cerrar la aplicación al cerrar la ventana
 		setBounds(100, 100, 900, 700); // Dimensiones de la ventana
 		contentPane = new JPanel(); // Crear el panel principal
@@ -299,15 +455,17 @@ public class VentanaMain extends JFrame {
 			mostrarJornadaActual(); // Actualiza la vista
 		});
 		
-				JButton btnAnterior = new JButton(""); // Botón para ir a la jornada anterior
-				btnAnterior.setIcon(new ImageIcon("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\left.png"));
-				btnAnterior.setBackground(new Color(255, 255, 255)); // Color de fondo del botón
-				btnAnterior.setForeground(Color.WHITE); // Color del texto del botón
-				btnAnterior.addActionListener(e -> {
-					jornadaActual = Math.max(jornadaActual - 1, 0); // Decrementa pero no pasa de 0
-					mostrarJornadaActual(); // Actualiza la vista
-				});
-				panel.add(btnAnterior); // Añadir botón anterior al panel
+		JButton btnAnterior = new JButton(""); // Botón para ir a la jornada anterior
+		btnAnterior.setIcon(new ImageIcon("C:\\Users\\ik_1dw3a\\Documents\\GitHub\\Temporada2_Grupo2_PROG\\media\\left.png"));
+		btnAnterior.setBackground(new Color(255, 255, 255)); // Color de fondo del botón
+		btnAnterior.setForeground(Color.WHITE); // Color del texto del botón
+		btnAnterior.addActionListener(e -> {
+				jornadaActual = Math.max(jornadaActual - 1, 0); // Decrementa pero no pasa de 0
+				mostrarJornadaActual(); // Actualiza la vista
+				CambiarJornadaEditable();
+		});
+		
+		panel.add(btnAnterior); // Añadir botón anterior al panel
 
 		panel.add(comboBox); // Añadir JComboBox al panel
 		JButton btnSiguiente = new JButton(""); // Botón para ir a la siguiente jornada
@@ -315,9 +473,12 @@ public class VentanaMain extends JFrame {
 		btnSiguiente.setBackground(new Color(255, 255, 255)); // Color de fondo del botón
 		btnSiguiente.setForeground(Color.WHITE); // Color del texto del botón
 		btnSiguiente.addActionListener(e -> {
-			jornadaActual = Math.min(jornadaActual + 1, jornadas.size() - 1); // Incrementa pero no pasa del tamaño de jornadas
-			mostrarJornadaActual(); // Actualiza la vista
+				jornadaActual = Math.min(jornadaActual + 1, jornadas.size() - 1); // Incrementa pero no pasa del tamaño de jornadas
+				mostrarJornadaActual(); // Actualiza la vista
+				CambiarJornadaEditable();
 		});
+		
+		
 
 		panel.add(btnSiguiente); // Añadir botón siguiente al panel
 		JPanel panel_1 = new JPanel(); // Panel para mostrar los resultados de los partidos
@@ -343,8 +504,7 @@ public class VentanaMain extends JFrame {
 
 		panel_1.add(lblNewLabel); // Añadir etiqueta "vs" entre los equipos
 		panel_1.add(golesVisitante_1); // Añadir campo de texto para goles del equipo visitante 1
-		panel_1.add(lblVisitante_1); // Añadir etiqueta para el equipo visitante 1
-		panel_1.add(lblNewLabel_3); // Añadir etiqueta vacía para separación
+		panel_1.add(lblVisitante_1);
 		panel_1.add(lblNewLabel_4); // Añadir etiqueta vacía para separación
 		panel_1.add(lblLocal_2); // Añadir etiqueta para el equipo local 2
 		golesLocal_2.setEditable(!modoSoloLectura); // Hacer editable el campo si no está en modo solo lectura
@@ -390,7 +550,7 @@ public class VentanaMain extends JFrame {
 		btnGuardar.setBackground(new Color(0, 120, 215)); // Color de fondo del botón
 		btnGuardar.setForeground(Color.WHITE); // Color del texto del botón
 		btnGuardar.setEnabled(!modoSoloLectura); // Habilitar el botón si no está en modo solo lectura
-		btnGuardar.addActionListener(e -> guardarResultados()); // Acción al hacer clic en el botón para guardar resultados
+		btnGuardar.addActionListener(e -> guardarResultados());// Acción al hacer clic en el botón para guardar resultados
 		panel_1.add(lblNewLabel_7); // Añadir etiqueta vacía para separación
 		panel_1.add(btnGuardar); // Añadir botón de guardar al panel
 		JButton btnRestablecer = new JButton("Restablecer"); // Botón para restablecer los campos de entrada
@@ -398,14 +558,37 @@ public class VentanaMain extends JFrame {
 		btnRestablecer.setForeground(Color.WHITE); // Color del texto del botón
 		btnRestablecer.addActionListener(e -> {
 			// Limpiar los campos de texto de goles
-			golesLocal_1.setText("");
-			golesVisitante_1.setText("");
-			golesLocal_2.setText("");
-			golesVisitante_2.setText("");
-			golesLocal_3.setText("");
-			golesVisitante_3.setText("");
+			int opcion = JOptionPane.showConfirmDialog(this,(String)"Seguro que quiere restablecer la temporadas?","Info",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null);
+			switch (opcion) {
+				case JOptionPane.YES_OPTION: // opcion "Si"
+					// restablece
+					golesLocal_1.setText("");
+					golesVisitante_1.setText("");
+					golesLocal_2.setText("");
+					golesVisitante_2.setText("");
+					golesLocal_3.setText("");
+					golesVisitante_3.setText("");
+					jornadaEnJuego=0;
+					for(int i=0;i<10;i++) {
+						resultadosGuardados[i] = false;
+					}
+					CambiarJornadaEditable();
+					generarXML();
+					break;
+				case JOptionPane.NO_OPTION: // opcion "No"
+				case JOptionPane.CANCEL_OPTION: 
+				case JOptionPane.CLOSED_OPTION:
+			}	
 		});
 
+		// Agregar la validación a los JTextField
+		agregarValidacionJornada(golesLocal_1);
+		agregarValidacionJornada(golesVisitante_1);
+		agregarValidacionJornada(golesLocal_2);
+		agregarValidacionJornada(golesVisitante_2);
+		agregarValidacionJornada(golesLocal_3);
+		agregarValidacionJornada(golesVisitante_3);
+		
 		if (modoSoloLectura) {
 			btnRestablecer.setEnabled(false); // Deshabilitar el botón si está en modo solo lectura
 		}
@@ -417,19 +600,12 @@ public class VentanaMain extends JFrame {
 		btnAtras.setForeground(Color.WHITE); // Color del texto del botón
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				VentanaLogin.RolSesion = "Usuario";
 				VentanaLogin vl = new VentanaLogin();
 				// la muestro
 				vl.setVisible(true);
 				dispose();
 			}
-			/*
-			 		btnCrearUsuario.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CrearUsuario cu = new CrearUsuario();
-				// la muestro
-				cu.setVisible(true);
-			}
-			 */
 		});
 
 		panel_1.add(lblNewLabel_10); // Añadir etiqueta vacía para separación
@@ -456,36 +632,184 @@ public class VentanaMain extends JFrame {
 		contentPane.add(panel_1_1, BorderLayout.NORTH);
 		panel_1_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
+		panel_1_1.add(lbltemporada);
+		
 		panel_1_1.add(cbTemporadas);
+				
+		cbTemporadas.addItem("Temporada 2023"); // Añadir temporadas a la JComboBox
+		cbTemporadas.addItem("Temporada 2024");
 		
-		panel_1_1.add(btnVerTemporada);
+		//Iniciamos la temporada por defecto
+		temporadaActual = temporadas.length-1; //La temporada actual es la ultima temporada dentro del programa
+		cbTemporadas.setSelectedIndex(temporadaActual);
+		temporada = String.valueOf(cbTemporadas.getSelectedItem());
+		temporada = temporada.substring(10);
 		
-		panel_1_1.add(btnNewButton);
+		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
+				
+		cbTemporadas.addActionListener(e -> {
+			temporada = String.valueOf(cbTemporadas.getSelectedItem());
+			temporada = temporada.substring(10);
+			modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
+			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
+			CambiarJornadaEditable();
+		});
+		
+		btnIniciarTemporada.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				// abrir VentanaIniciarTemporada
+			}
+		});
+		
+		panel_1_1.add(btnIniciarTemporada);
 		
 		contentPane.add(panel_2, BorderLayout.SOUTH);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
 		panel_2.add(panel_3, BorderLayout.EAST);
 		panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		btnCrearUsuario.addActionListener(new ActionListener() {
+		btnUsuarios.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CrearUsuario cu = new CrearUsuario();
+				CrearUsuario cu = new CrearUsuario(RolSesion);
 				// la muestro
 				cu.setVisible(true);
 			}
 		});
 		
-		panel_3.add(btnCrearUsuario);
+		panel_3.add(btnUsuarios);
 		
-		panel_3.add(btnNewButton_2);
+		panel_3.add(btnEquipos);
 		panel_2.add(lblRol, BorderLayout.WEST);
-		lblRol.setText("Rol: " + rolUsuario);
+		try {
+			lblRol.setText("Rol: " + VentanaLogin.RolSesion);
+			if (RolSesion.equals("Usuario")){
+				btnUsuarios.setVisible(false);
+				btnIniciarTemporada.setVisible(false);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		generarPartidos(); // Generar los partidos al iniciar
 		mostrarJornadaActual(); // Mostrar la primera jornada
 
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
+	
+	public static void cargarJornadas(String archivo) {
+		 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+	            // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
+	            Object obj;
+	            while ((obj = ois.readObject()) != null) {
+	                if (obj instanceof Partido) {
+	                    Partido partido = (Partido) obj;
+	                    matrizJornadas.addLast(partido);
+	                }
+	            }
+	        } catch (EOFException e) {
+	            // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
+	            System.out.println("Archivo cargado completamente.");
+	        } catch (FileNotFoundException e) {
+	            System.err.println("El archivo no existe: " + archivo);
+	        } catch (IOException | ClassNotFoundException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	public static void GrabarJornadas(String nombreArchivo, DefaultListModel<Partido> dlm) {
+		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
+			 for (int i = 0; i < dlm.size(); i++) {
+	                oos.writeObject(dlm.get(i)); // Escribir cada objeto
+	            }
+	            System.out.println("Lista guardada en objetos.ser");
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	}
+	
+	private void CambiarJornadaEditable() {
+		if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
+			CambiarSoloLectura(true);					
+		} else if(!resultadosGuardados[jornadaActual]) {
+			CambiarSoloLectura(false);
+		} else {
+			CambiarSoloLectura(true);
+		}
+	}
+
+	private void CambiarSoloLectura(boolean editable) {
+		golesLocal_1.setEnabled(!editable);
+		golesVisitante_1.setEnabled(!editable);
+		golesLocal_2.setEnabled(!editable);
+		golesVisitante_2.setEnabled(!editable);
+		golesLocal_3.setEnabled(!editable);
+		golesVisitante_3.setEnabled(!editable);
+		
+	}
+	
+	// Agregar un KeyListener al JTextField
+			private void agregarValidacionJornada(JTextField textField) {
+				textField.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					if (jornadaActual != jornadaEnJuego) {
+						// Mostrar mensaje de error
+						JOptionPane.showMessageDialog(tablaClasificacion,"La jornada " + (jornadaEnJuego + 1) + " todavia no ha sido jugada."); // Mensaje de éxito
+						// Consumir el evento para evitar que se escriba texto
+						e.consume();
+					}
+				}
+			});
+			}
+		
+	private static void cargarDatosDesdeXML(DefaultTableModel model, String filePath, String temporadaSeleccionada) {
+        try {
+            File xmlFile = new File(filePath);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            doc.getDocumentElement().normalize();
+
+            NodeList temporadas = doc.getElementsByTagName("temporada");
+            for (int i = 0; i < temporadas.getLength(); i++) {
+                if (temporadas.item(i).getFirstChild().getTextContent().equals(temporadaSeleccionada)) {
+                    NodeList equipos = temporadas.item(i).getChildNodes();
+                    for (int j = 1; j < equipos.getLength(); j++) {
+                        if (equipos.item(j).getNodeName().equals("equipo")) {
+                            NodeList datosEquipo = equipos.item(j).getChildNodes();
+                            String[] rowData = new String[6];
+                            for (int k = 0; k < datosEquipo.getLength(); k++) {
+                                switch (datosEquipo.item(k).getNodeName()) {
+                                    case "ranking":
+                                        rowData[0] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "nombre":
+                                        rowData[1] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "puntos":
+                                        rowData[2] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "golesFavor":
+                                        rowData[3] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "golesContra":
+                                        rowData[4] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                    case "diferenciaGoles":
+                                        rowData[5] = datosEquipo.item(k).getTextContent();
+                                        break;
+                                }
+                            }
+                            model.addRow(rowData);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
@@ -507,7 +831,7 @@ public class VentanaMain extends JFrame {
 				return puntosComparar; // Retornar comparación de puntos
 			}
 		});
-
+		
 		modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
 		for (int i = 0; i < listaEquipos.size(); i++) { // Iterar sobre la lista de equipos
 			Equipo equipo = listaEquipos.get(i); // Obtener el equipo actual
