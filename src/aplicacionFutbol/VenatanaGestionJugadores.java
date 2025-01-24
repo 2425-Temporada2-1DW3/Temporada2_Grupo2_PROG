@@ -7,6 +7,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.HeadlessException;
+
 import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JList;
@@ -39,8 +41,10 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 	private JList<Jugador> lstJugadores;
 	private static DefaultListModel<Jugador> dlm;
 	private boolean modificado = false;
-	private boolean error = false;
+	private static boolean error = false;
 	private boolean modificando = false;
+	private static String nombre;
+	private static String apellidos;
 	
 	private JTextField tfNombre;
 	private JTextField tfApellidos;
@@ -178,8 +182,8 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 	public void actionPerformed(ActionEvent ae) {
 		// TODO Auto-generated method stub
 		Object o = ae.getSource();
-		String nombre;
-		String apellidos;
+		//String nombre;
+		//String apellidos;
 		if(o == btnAñadir) {
 			if (modificando == false) {
 				nombre = tfNombre.getText().trim();
@@ -190,6 +194,18 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 					JOptionPane.showMessageDialog(this, (String) "No Puede haber campos vacios :(", "Error",JOptionPane.ERROR_MESSAGE);
 					error = true;
 				}else {
+					Jugador j;
+					for (int i = dlm.getSize() -1 ; i >= 0; i--) {
+						j = dlm.getElementAt(i); // Obtenemos el jugador
+						if (j.getNombre().equalsIgnoreCase(nombre) || j.getApellidos().equalsIgnoreCase(apellidos)) {
+							JOptionPane.showMessageDialog(this, (String) "El jugador "+nombre+" "+apellidos+" ya esta en uso.", "Error",JOptionPane.ERROR_MESSAGE);
+							error = true;
+							break;
+						}
+					}
+				}
+
+				if(error == false){
 					// creamos el objeto
 					Jugador j = new Jugador(nombre,apellidos);
 					// lo añadimos al dlm
@@ -253,16 +269,28 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 				
 		
 			}else if (modificando == true) {
-
-				//System.out.println(tfNombre.getText().trim());
-				//System.out.println(tfApellidos.getText().trim());
-				j.setNombre(tfNombre.getText().trim());
-				j.setApellidos(tfApellidos.getText().trim());
 				
-				dlm.set(IndSelec[0],j);
-				modificando = false;
-				btnModificar.setText("Modificar");
-				GrabarJugadores("Jugadores.ser", dlm);
+				Jugador jug;
+				for (int i = dlm.getSize() -1 ; i >= 0; i--) {
+					jug = dlm.getElementAt(i); // Obtenemos el jugador
+					if (jug.getNombre().equalsIgnoreCase(nombre) || jug.getApellidos().equalsIgnoreCase(apellidos)) {
+						JOptionPane.showMessageDialog(this, (String) "El jugador "+nombre+" "+apellidos+" ya esta en uso.", "Error",JOptionPane.ERROR_MESSAGE);
+						error = true;
+						break;
+					}
+				}
+				if(!error) {
+					//System.out.println(tfNombre.getText().trim());
+					//System.out.println(tfApellidos.getText().trim());
+					j.setNombre(tfNombre.getText().trim());
+					j.setApellidos(tfApellidos.getText().trim());
+					
+					dlm.set(IndSelec[0],j);
+					modificando = false;
+					btnModificar.setText("Modificar");
+					GrabarJugadores("Jugadores.ser", dlm);
+				}
+				
 			}
 			}
 			
@@ -308,6 +336,9 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 	            e.printStackTrace();
 	        }
 	}
+	
+		
+	
 	
 	
 
