@@ -23,6 +23,14 @@ public class Partido implements Serializable{
 		this.marcadorVisitante = mv;
 	}
 
+	public Partido() {
+		temporada= 0;
+		jornada = 0;
+		partido = 0;
+		marcadorLocal = 0;
+		marcadorVisitante = 0;
+	}
+
 	@Override
 	public String toString() {
 		return "Marcador local "+marcadorLocal+" - "+marcadorVisitante+" Marcador visitante";

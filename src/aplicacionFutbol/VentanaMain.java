@@ -95,7 +95,10 @@ public class VentanaMain extends JFrame {
 	
 	// Lista de equipos que participan en la liga
 	String[] equipos = { "athletic", "Barcelona", "Madrid", "Alaves", "Osasuna", "Eibar" };
-	private int jornadaActual = 0; // Índice de la jornada actual
+	private int numEquipos = equipos.length; // Número de equipos
+	private int numJornadas = 10; // Número de jornadas
+	private int[][] goles = new int[numEquipos / 2][2];
+	private int jornadaActual = jornadaEnJuego; // Índice de la jornada actual
 	private List<String[][]> jornadas; // Almacena las jornadas y los partidos correspondientes
 	private JTable tablaClasificacion; // Tabla para mostrar la clasificación de los equipos
 	private DefaultTableModel modeloTablaClasificacion; // Modelo de la tabla de clasificación
@@ -119,7 +122,6 @@ public class VentanaMain extends JFrame {
 			return; // No hay jornadas disponibles, salir del método
 		}
 		String[][] partidos = jornadas.get(jornadaActual); // Acceso a los partidos de la jornada actual
-		int[][] goles = resultados.get(jornadaActual); // Acceso a los resultados de la jornada actual
 		cargarJornadas("Jornadas.ser");
 		
 		// Cargar y asignar los nombres y escudos a los JLabels de los equipos
@@ -135,21 +137,40 @@ public class VentanaMain extends JFrame {
 		lblLocal_3.setIcon(cargarEscudo(partidos[2][0]));
 		lblVisitante_3.setText(partidos[2][1]);
 		lblVisitante_3.setIcon(cargarEscudo(partidos[2][1]));
-
-		// Cargar resultados existentes en los JTextFields, dejando vacíos si los goles son 0
-		golesLocal_1.setText(goles[0][0] == 0 ? "" : String.valueOf(goles[0][0])); // Goles locales del partido 1
-		golesVisitante_1.setText(goles[0][1] == 0 ? "" : String.valueOf(goles[0][1])); // Goles visitantes del partido 1
-		golesLocal_2.setText(goles[1][0] == 0 ? "" : String.valueOf(goles[1][0])); // Goles locales del partido 2
-		golesVisitante_2.setText(goles[1][1] == 0 ? "" : String.valueOf(goles[1][1])); // Goles visitantes del partido 2
-		golesLocal_3.setText(goles[2][0] == 0 ? "" : String.valueOf(goles[2][0])); // Goles locales del partido 3
-		golesVisitante_3.setText(goles[2][1] == 0 ? "" : String.valueOf(goles[2][1])); // Goles visitantes del partido 3
+		
+		boolean fill=false;
+			for(int i=0; i<matrizJornadas.size(); i++) {
+				partido = matrizJornadas.get(i);
+				if ((partido.getTemporadaNumero() == cbTemporadas.getSelectedIndex()-1) && (partido.getJornadaNumero() == jornadaActual)){
+					switch(partido.getPartidoNumero()) {
+					case 0:
+						golesLocal_1.setText(String.valueOf(partido.getMarcadorLocal())); // Goles locales del partido 1
+						golesVisitante_1.setText(String.valueOf(partido.getMarcadorVisitante())); // Goles visitantes del partido 1
+					case 1:
+						golesLocal_2.setText(String.valueOf(partido.getMarcadorLocal())); // Goles locales del partido 2
+						golesVisitante_2.setText(String.valueOf(partido.getMarcadorVisitante())); // Goles visitantes del partido 2
+					case 2:
+						golesLocal_3.setText(String.valueOf(partido.getMarcadorLocal())); // Goles locales del partido 3
+						golesVisitante_3.setText(String.valueOf(partido.getMarcadorVisitante())); // Goles visitantes del partido 3
+						fill=true;
+					}
+				}
+			}
+		
+		if(!fill) {
+			golesLocal_1.setText(""); // Goles locales del partido 1
+			golesVisitante_1.setText(""); // Goles visitantes del partido 1
+			golesLocal_2.setText(""); // Goles locales del partido 2
+			golesVisitante_2.setText(""); // Goles visitantes del partido 2
+			golesLocal_3.setText(""); // Goles locales del partido 3
+			golesVisitante_3.setText(""); // Goles visitantes del partido 3
+		}
 		comboBox.setSelectedIndex(jornadaActual); // Actualiza el JComboBox para reflejar la jornada actual
+		CambiarJornadaEditable();
 	}
 
 	// Método para generar los partidos de la liga
 	public void generarPartidos() {
-		int numEquipos = equipos.length; // Número de equipos
-		int numJornadas = 10; // Número de jornadas
 		jornadas = new ArrayList<>(); // Inicializa la lista de jornadas
 		resultados = new ArrayList<>(); // Inicializa la lista de resultados
 		listaEquipos = new ArrayList<>(); // Inicializa la lista de equipos
@@ -162,7 +183,7 @@ public class VentanaMain extends JFrame {
 		// Genera los partidos para cada jornada
 		for (int jornada = 0; jornada < numJornadas; jornada++) {
 			String[][] partidos = new String[numEquipos / 2][2]; // Array para almacenar los partidos de la jornada
-			int[][] goles = new int[numEquipos / 2][2]; // Array para almacenar los goles de los partidos
+			 // Array para almacenar los goles de los partidos
 			for (int partido = 0; partido < numEquipos / 2; partido++) {
 				int equipoLocal = (jornada + partido) % (numEquipos - 1); // Determina el equipo local
 				int equipoVisitante = (numEquipos - 1 - partido + jornada) % (numEquipos - 1); // Determina el equipo
@@ -271,8 +292,6 @@ public class VentanaMain extends JFrame {
 				resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
 				resultados.get(jornadaActual)[i][0] = resultadoLocal; // Guardar goles del local
 				resultados.get(jornadaActual)[i][1] = resultadoVisitante; // Guardar goles del visitante
-				generarJornadasXML(temporadaActual,jornadaActual,i,resultadoLocal,resultadoVisitante);
-				
 				// Actualizar equipos con los resultados
 				actualizarEquipos(partidos[i][0], resultadoLocal, resultadoVisitante);
 				actualizarEquipos(partidos[i][1], resultadoVisitante, resultadoLocal);
@@ -294,6 +313,7 @@ public class VentanaMain extends JFrame {
 					JOptionPane.showMessageDialog(this, "Resultados guardados correctamente."); // Mensaje de éxito
 					resultadosGuardados[jornadaActual] = true; // Marcar resultados como guardados para la jornada actual
 					CambiarJornadaEditable();
+					generarJornadasXML(temporadaActual,jornadaEnJuego);
 					generarXML();
 					break;
 				case JOptionPane.NO_OPTION: // opcion "No"
@@ -303,9 +323,21 @@ public class VentanaMain extends JFrame {
 		}
 	}
 
-	private void generarJornadasXML(int temporada, int jornada, int numeroPartido, int marcadorLocal, int marcadorVisitante) {
-		partido = new Partido(temporada, jornada, numeroPartido, marcadorLocal, marcadorVisitante);
-		GrabarJornadas("Jornadas.ser", null);
+	private void generarJornadasXML(int temporada, int jornada) {
+				partido = new Partido(temporada, jornada, 0, Integer.parseInt(golesLocal_1.getText()), Integer.parseInt(golesVisitante_1.getText()));
+				System.out.println(partido.getMarcadorLocal() +" - "+ partido.getMarcadorVisitante());
+				matrizJornadas.add(partido);
+				GrabarJornadas("Jornadas.ser");
+				
+				partido = new Partido(temporada, jornada, 1, Integer.parseInt(golesLocal_2.getText()), Integer.parseInt(golesVisitante_2.getText()));
+				System.out.println(partido.getMarcadorLocal() +" - "+ partido.getMarcadorVisitante());
+				matrizJornadas.add(partido);
+				GrabarJornadas("Jornadas.ser");
+				
+				partido = new Partido(temporada, jornada, 2, Integer.parseInt(golesLocal_3.getText()), Integer.parseInt(golesVisitante_3.getText()));
+				System.out.println(partido.getMarcadorLocal() +" - "+ partido.getMarcadorVisitante());
+				matrizJornadas.add(partido);
+				GrabarJornadas("Jornadas.ser");
 	}
 
 	private void generarXML() {
@@ -442,8 +474,6 @@ public class VentanaMain extends JFrame {
 		panel.setBackground(new Color(240, 240, 240)); // Color de fondo
 		izquierda.add(panel, BorderLayout.NORTH); // Añadir panel a la parte superior del panel izquierdo
 		
-		
-
 		// Añadir las opciones al JComboBox para seleccionar la jornada
 		for (int i = 1; i <= 10; i++) {
 			comboBox.addItem("Jornada " + i); // Añadir jornadas al JComboBox
@@ -462,7 +492,6 @@ public class VentanaMain extends JFrame {
 		btnAnterior.addActionListener(e -> {
 				jornadaActual = Math.max(jornadaActual - 1, 0); // Decrementa pero no pasa de 0
 				mostrarJornadaActual(); // Actualiza la vista
-				CambiarJornadaEditable();
 		});
 		
 		panel.add(btnAnterior); // Añadir botón anterior al panel
@@ -475,7 +504,6 @@ public class VentanaMain extends JFrame {
 		btnSiguiente.addActionListener(e -> {
 				jornadaActual = Math.min(jornadaActual + 1, jornadas.size() - 1); // Incrementa pero no pasa del tamaño de jornadas
 				mostrarJornadaActual(); // Actualiza la vista
-				CambiarJornadaEditable();
 		});
 		
 		
@@ -637,13 +665,13 @@ public class VentanaMain extends JFrame {
 		panel_1_1.add(cbTemporadas);
 				
 		cbTemporadas.addItem("Temporada 2023"); // Añadir temporadas a la JComboBox
-		cbTemporadas.addItem("Temporada 2024");
+		cbTemporadas.addItem("Temporada 2024"); // Añadir temporadas a la JComboBox
 		
 		//Iniciamos la temporada por defecto
 		temporadaActual = temporadas.length-1; //La temporada actual es la ultima temporada dentro del programa
-		cbTemporadas.setSelectedIndex(temporadaActual);
+		cbTemporadas.setSelectedIndex(temporadaActual); //por defecto se selecciona la temporada en juego
 		temporada = String.valueOf(cbTemporadas.getSelectedItem());
-		temporada = temporada.substring(10);
+		temporada = temporada.substring(10); //se borra el "temporada " y se queda solo con el numero "####"
 		
 		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
 				
@@ -691,8 +719,10 @@ public class VentanaMain extends JFrame {
 			e1.printStackTrace();
 		}
 		generarPartidos(); // Generar los partidos al iniciar
+		cargarJornadas("Jornadas.ser");
+		temporadaActual = matrizJornadas.get(matrizJornadas.size()).getTemporadaNumero();
+		temporada = String.valueOf(temporadaActual);
 		mostrarJornadaActual(); // Mostrar la primera jornada
-
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
@@ -717,10 +747,10 @@ public class VentanaMain extends JFrame {
 	        }
 	}
 	
-	public static void GrabarJornadas(String nombreArchivo, DefaultListModel<Partido> dlm) {
+	public static void GrabarJornadas(String nombreArchivo) {
 		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
-			 for (int i = 0; i < dlm.size(); i++) {
-	                oos.writeObject(dlm.get(i)); // Escribir cada objeto
+			 for (int i = 0; i < matrizJornadas.size(); i++) {
+	                oos.writeObject(matrizJornadas.get(i)); // Escribir cada objeto
 	            }
 	            System.out.println("Lista guardada en objetos.ser");
 	        } catch (IOException e) {
@@ -729,15 +759,17 @@ public class VentanaMain extends JFrame {
 	}
 	
 	private void CambiarJornadaEditable() {
-		if (cbTemporadas.getSelectedIndex() != (temporadaActual)) {
-			CambiarSoloLectura(true);					
-		} else if(!resultadosGuardados[jornadaActual]) {
+		if (cbTemporadas.getSelectedIndex() == temporadaActual) {
+			if (jornadaEnJuego != (jornadaActual)) {
+				CambiarSoloLectura(true);					
+			} else if (temporadaActual != cbTemporadas.getSelectedIndex()) {
+				CambiarSoloLectura(true);									
+			}else {
 			CambiarSoloLectura(false);
-		} else {
-			CambiarSoloLectura(true);
+			}
 		}
 	}
-
+	
 	private void CambiarSoloLectura(boolean editable) {
 		golesLocal_1.setEnabled(!editable);
 		golesVisitante_1.setEnabled(!editable);
@@ -753,9 +785,14 @@ public class VentanaMain extends JFrame {
 				textField.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
-					if (jornadaActual != jornadaEnJuego) {
+					if (jornadaActual > jornadaEnJuego) {
 						// Mostrar mensaje de error
 						JOptionPane.showMessageDialog(tablaClasificacion,"La jornada " + (jornadaEnJuego + 1) + " todavia no ha sido jugada."); // Mensaje de éxito
+						// Consumir el evento para evitar que se escriba texto
+						e.consume();
+					} else if (jornadaActual < jornadaEnJuego)  {
+						// Mostrar mensaje de error
+						JOptionPane.showMessageDialog(tablaClasificacion,"La jornada " + (jornadaActual + 1) + " ya ha sido jugada."); // Mensaje de éxito
 						// Consumir el evento para evitar que se escriba texto
 						e.consume();
 					}
