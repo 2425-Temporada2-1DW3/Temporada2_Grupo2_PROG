@@ -624,16 +624,12 @@ public class VentanaMain extends JFrame {
 
 		panel_1.add(lblNewLabel_9); // Añadir etiqueta vacía para separación
 		panel_1.add(btnRestablecer); // Añadir botón de restablecer al panel
-		JButton btnAtras = new JButton("Cerrar Sesión"); // Botón para cerrar sesión
+		JButton btnAtras = new JButton("Salir"); // Botón para cerrar sesión
 		btnAtras.setBackground(new Color(0, 120, 215)); // Color de fondo del botón
 		btnAtras.setForeground(Color.WHITE); // Color del texto del botón
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VentanaLogin.RolSesion = "Usuario";
-				VentanaLogin vl = new VentanaLogin();
-				// la muestro
-				vl.setVisible(true);
-				dispose();
+				System.exit(EXIT_ON_CLOSE);
 			}
 		});
 
@@ -686,8 +682,9 @@ public class VentanaMain extends JFrame {
 		
 		btnIniciarTemporada.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				// abrir VentanaIniciarTemporada
+				VentanaIniciarTemporada vit = new VentanaIniciarTemporada();
+				// la muestro
+				vit.setVisible(true);
 			}
 		});
 		
@@ -709,6 +706,13 @@ public class VentanaMain extends JFrame {
 		panel_3.add(btnUsuarios);
 		
 		panel_3.add(btnEquipos);
+		btnEquipos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaGestionEquipos vge = new VentanaGestionEquipos();
+				// la muestro
+				vge.setVisible(true);
+			}
+		});
 		panel_2.add(lblRol, BorderLayout.WEST);
 		try {
 			lblRol.setText("Rol: " + VentanaLogin.RolSesion);
