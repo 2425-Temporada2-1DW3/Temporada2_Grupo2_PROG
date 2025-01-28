@@ -24,7 +24,7 @@ public class Partido implements Serializable{
 	}
 
 	public Partido() {
-		temporada= 0;
+		temporada= 1;
 		jornada = 0;
 		partido = 0;
 		marcadorLocal = 0;
