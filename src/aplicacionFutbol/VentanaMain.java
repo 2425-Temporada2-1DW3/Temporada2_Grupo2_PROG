@@ -767,12 +767,12 @@ public class VentanaMain extends JFrame {
 	private void CambiarJornadaEditable() {
 		if (cbTemporadas.getSelectedIndex() == temporadaActual) {
 			if (jornadaEnJuego != (jornadaActual)) {
-				CambiarSoloLectura(true);					
-			} else if (temporadaActual != cbTemporadas.getSelectedIndex()) {
-				CambiarSoloLectura(true);									
-			}else {
-			CambiarSoloLectura(false);
+				CambiarSoloLectura(true);							
+			} else {
+				CambiarSoloLectura(false);
 			}
+		} else {
+			CambiarSoloLectura(true);
 		}
 	}
 	
