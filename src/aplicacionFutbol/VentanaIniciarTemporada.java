@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 public class VentanaIniciarTemporada extends JFrame implements ActionListener, WindowListener{
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	public static JPanel contentPane;
 	public static JTextField anioTemporada;
 	private JComboBox comboBox;
 	private JComboBox comboBox_1;
@@ -167,6 +167,7 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
 					"Guardar");
 				
 				if (result == JOptionPane.YES_OPTION) {
+					VentanaMain.nuevaTemporada();
 					// Acción para el botón "Guardar" (sin función de momento)
 				} else if (result == JOptionPane.NO_OPTION) {
 					// Acción para el botón "Cancelar" (cerrar el pop-up)
