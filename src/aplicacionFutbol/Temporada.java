@@ -3,7 +3,7 @@ package aplicacionFutbol;
 
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,7 +18,15 @@ public class Temporada implements Serializable {
 
     private List<Equipo> equipos;
 
-
+    
+    public Temporada() {
+    	this.ano = 0000;
+    	List<Equipo> EquiposVacios = new ArrayList<>();
+    	for(int i=0;i<6;i++) {
+    		EquiposVacios.add(new Equipo());
+    	}
+        this.equipos = (EquiposVacios);
+    }
 
     public Temporada(int ano, List<Equipo> equipos) {
 

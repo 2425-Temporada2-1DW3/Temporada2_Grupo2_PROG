@@ -11,7 +11,16 @@ public class Equipo implements Serializable {
     private List<Jugador> jugadores;
     private int ano;
     private String rutaImagen; // Añadido para la ruta de la imagen
-
+    
+    public Equipo() {
+        this.nombre_e = "Equipo vacio";
+        this.jugadores = new ArrayList<>(); // Inicializar la lista de jugadores
+        this.jugadores.add(new Jugador());
+        this.jugadores.add(new Jugador());
+        this.jugadores.add(new Jugador());
+        this.jugadores.add(new Jugador());
+        this.jugadores.add(new Jugador());
+    }
     // Constructor equipo lleno
     public Equipo(String nombre, Jugador j1, Jugador j2, Jugador j3, Jugador j4, Jugador j5) {
         this.nombre_e = nombre;
