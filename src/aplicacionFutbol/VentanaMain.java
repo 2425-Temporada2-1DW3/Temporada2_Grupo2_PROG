@@ -158,7 +158,6 @@ public class VentanaMain extends JFrame {
 			golesLocal_3.setText(""); // Goles locales del partido 3
 			golesVisitante_3.setText(""); // Goles visitantes del partido 3
 		}
-		actualizarComboBox();
 		CambiarJornadaEditable();
 	}
 
@@ -467,8 +466,8 @@ public class VentanaMain extends JFrame {
 
 		// Establecer la acción del JComboBox para cambiar la jornada actual
 		comboBox.addActionListener(e -> {
+			jornadaActual = comboBox.getSelectedIndex(); // Actualizar jornada actual
 			mostrarJornadaActual();
-			actualizarComboBox(); // Actualiza la vista
 		});
 		
 		JButton btnAnterior = new JButton(""); // Botón para ir a la jornada anterior
@@ -477,7 +476,7 @@ public class VentanaMain extends JFrame {
 		btnAnterior.setForeground(Color.WHITE); // Color del texto del botón
 		btnAnterior.addActionListener(e -> {
 				jornadaActual = Math.max(jornadaActual - 1, 0); // Decrementa pero no pasa de 0
-				mostrarJornadaActual(); // Actualiza la vista
+				actualizarComboBox(); // Actualiza la vista
 		});
 		
 		panel.add(btnAnterior); // Añadir botón anterior al panel
@@ -489,7 +488,7 @@ public class VentanaMain extends JFrame {
 		btnSiguiente.setForeground(Color.WHITE); // Color del texto del botón
 		btnSiguiente.addActionListener(e -> {
 				jornadaActual = Math.min(jornadaActual + 1, jornadas.size() - 1); // Incrementa pero no pasa del tamaño de jornadas
-				mostrarJornadaActual(); // Actualiza la vista
+				actualizarComboBox(); // Actualiza la vista
 		});
 		
 		
@@ -722,13 +721,13 @@ public class VentanaMain extends JFrame {
 		}
 		jornadaEnJuego = matrizJornadas.get(matrizJornadas.size()-1).getJornadaNumero();
 		jornadaActual = Math.min(jornadaEnJuego, jornadas.size() - 1);
-		mostrarJornadaActual(); // Mostrar la primera jornada
+		actualizarComboBox();
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
 	}
 	
 	private void actualizarComboBox() {
-		jornadaActual = comboBox.getSelectedIndex(); // Actualizar jornada actual
+		comboBox.setSelectedIndex(jornadaActual);
 	}
 
 	public static void cargarJornadas(String archivo) {
