@@ -289,6 +289,7 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 					// pongo los datos del jugador visibles
 					tfNombre.setText(j.getNombre());
 					tfApellidos.setText(j.getApellidos());
+					
 					lblImagen.setText("");
 					lblImagen.setIcon(fotoIcon = new ImageIcon(j.getRutaImagen()));
 					btnModificar.setText("Aplicar cambios");
@@ -478,49 +479,5 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
     	return false;
     		
    }
-	
-	
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }
