@@ -34,8 +34,8 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
     private static final long serialVersionUID = 1L;
     private static DefaultListModel<Equipo> equipos;
     private static List<Temporada> temporadas = new ArrayList<>();
-    private JPanel contentPane;
-    private JTextField textField;
+    public static JPanel contentPane;
+    public static JTextField anioTemporada;
     private JComboBox<Equipo> comboBox;
     private JComboBox<Equipo> comboBox_1;
     private JComboBox<Equipo> comboBox_2;
@@ -79,9 +79,9 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
         JLabel lblNewLabel = new JLabel("Año:");
         body.add(lblNewLabel, "cell 0 0,alignx right,aligny center");
 
-        textField = new JTextField();
-        body.add(textField, "cell 1 0,width 50:100:200,height 25:50:75");
-        textField.setColumns(10);
+        anioTemporada = new JTextField();
+        body.add(anioTemporada, "cell 1 0,width 50:100:200,height 25:50:75");
+        anioTemporada.setColumns(10);
 
         comboBox = new JComboBox<>();
         body.add(comboBox, "cell 1 1,growx,aligny top");
@@ -217,8 +217,8 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnNewButton) {
-            if (textField.getText().isEmpty() || 
-                !textField.getText().matches("\\d+") || // Validar que el campo de texto solo contiene números
+            if (anioTemporada.getText().isEmpty() || 
+                !anioTemporada.getText().matches("\\d+") || // Validar que el campo de texto solo contiene números
                 comboBox.getSelectedItem() == null || 
                 comboBox_1.getSelectedItem() == null || 
                 comboBox_2.getSelectedItem() == null || 
@@ -239,7 +239,7 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
                 
                 if (result == JOptionPane.YES_OPTION) {
                     // Crear el objeto Temporada y almacenarlo en la lista
-                    int ano = Integer.parseInt(textField.getText().trim());
+                    int ano = Integer.parseInt(anioTemporada.getText().trim());
                     List<Equipo> equiposSeleccionados = new ArrayList<>();
                     equiposSeleccionados.add((Equipo) comboBox.getSelectedItem());
                     equiposSeleccionados.add((Equipo) comboBox_1.getSelectedItem());
