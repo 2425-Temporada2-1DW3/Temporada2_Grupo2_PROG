@@ -167,8 +167,8 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
 					"Guardar");
 				
 				if (result == JOptionPane.YES_OPTION) {
-					VentanaMain.nuevaTemporada();
 					// Acción para el botón "Guardar" (sin función de momento)
+					// Inicializar ventana Equipos - Jugadores
 				} else if (result == JOptionPane.NO_OPTION) {
 					// Acción para el botón "Cancelar" (cerrar el pop-up)
 				}
