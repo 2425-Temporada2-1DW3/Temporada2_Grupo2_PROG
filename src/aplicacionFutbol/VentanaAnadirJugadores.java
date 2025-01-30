@@ -15,7 +15,7 @@ public class VentanaAnadirJugadores {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VentanaAnadirJugadores window = new VentanaAnadirJugadores();
+					VentanaAnadirJugadores window = new VentanaAnadirJugadores(null);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -26,8 +26,9 @@ public class VentanaAnadirJugadores {
 
 	/**
 	 * Create the application.
+	 * @param temporada 
 	 */
-	public VentanaAnadirJugadores() {
+	public VentanaAnadirJugadores(Temporada temporada) {
 		initialize();
 	}
 
@@ -38,6 +39,11 @@ public class VentanaAnadirJugadores {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	public void setVisible(boolean b) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
