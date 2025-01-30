@@ -253,7 +253,7 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
                     guardarTemporadas("Temporadas.ser");
 
                     // Abrir la siguiente ventana para mostrar los equipos de la temporada
-                    VentanaMostrarEquipos ventanaMostrarEquipos = new VentanaMostrarEquipos(temporada);
+                    VentanaAnadirJugadores ventanaMostrarEquipos = new VentanaAnadirJugadores(temporada);
                     ventanaMostrarEquipos.setVisible(true);
                     this.dispose();
                 } else if (result == JOptionPane.NO_OPTION) {
