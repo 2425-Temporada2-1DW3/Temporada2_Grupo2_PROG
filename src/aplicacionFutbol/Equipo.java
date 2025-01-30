@@ -10,6 +10,7 @@ public class Equipo implements Serializable {
     private String nombre_e; // Cambiado a variable de instancia
     private List<Jugador> jugadores;
     private int ano;
+    private String rutaImagen; // Añadido para la ruta de la imagen
 
     // Constructor equipo lleno
     public Equipo(String nombre, Jugador j1, Jugador j2, Jugador j3, Jugador j4, Jugador j5) {
@@ -56,5 +57,13 @@ public class Equipo implements Serializable {
 
     public void setAno(int ano) {
         this.ano = ano;
+    }
+
+    public String getRutaImagen() {
+        return rutaImagen;
+    }
+
+    public void setRutaImagen(String rutaImagen) {
+        this.rutaImagen = rutaImagen;
     }
 }
