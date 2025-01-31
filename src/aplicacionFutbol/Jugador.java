@@ -15,6 +15,12 @@ public class Jugador implements Serializable{
 	private String apellidos;
 	private String rutaImagen;
 	
+	public Jugador() {
+		this.nombre = "Jugador";
+		this.apellidos = "Inexistente";
+		this.rutaImagen = "";
+	}
+	
 	
 	// constructor sin imagen
 	public Jugador(String nombre, String apellidos) {
