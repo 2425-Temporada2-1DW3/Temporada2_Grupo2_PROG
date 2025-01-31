@@ -82,6 +82,7 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
 
         // Cargar jugadores desde el archivo Jugadores.ser
         cargarJugadores("Jugadores.ser");
+        VentanaMain.cargarJornadas("Jornadas.ser");
     }
 
     // Método que muestra los jugadores disponibles para el equipo seleccionado
@@ -137,6 +138,7 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSiguiente) {
+        	if (VentanaMain.matrizJornadas.get(VentanaMain.matrizJornadas.size()-1).getJornadaNumero() >= 10) {
             // Obtener los jugadores seleccionados
             List<Jugador> seleccionados = lstJugadores.getSelectedValuesList();
 
@@ -168,6 +170,9 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
                 // Mostrar algún mensaje de confirmación o pasar a otro equipo (según sea necesario)
                 lblEquipo.setText("Equipo " + equipoSeleccionado + " completado. Selecciona el siguiente equipo.");
             }
+        } else {
+        	System.out.println("La temporada "+VentanaMain.matrizJornadas.get(VentanaMain.matrizJornadas.size()-1).getTemporadaNumero()+" no ha sido finalizada");
+        }
         }
     }
 

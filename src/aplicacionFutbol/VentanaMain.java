@@ -74,7 +74,7 @@ public class VentanaMain extends JFrame {
 	public int temporadaActual;
 	String temporada;
 	public static int jornadaEnJuego = 0;
-	private static ArrayList<Partido> matrizJornadas = new ArrayList<>();
+	public static ArrayList<Partido> matrizJornadas = new ArrayList<>();
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
