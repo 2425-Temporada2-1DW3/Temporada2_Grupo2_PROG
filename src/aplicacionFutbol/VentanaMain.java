@@ -138,7 +138,8 @@ public class VentanaMain extends JFrame {
 		boolean fill=false;
 		for(int i=0; i<matrizJornadas.size(); i++) {
 			partido = matrizJornadas.get(i);
-			if ((partido.getTemporadaNumero() == cbTemporadas.getSelectedIndex()) && (partido.getJornadaNumero() == jornadaActual+1)){
+		if(partido.getJornadaNumero() == jornadaActual+1) {
+			if ((partido.getTemporadaNumero() == cbTemporadas.getSelectedIndex())) {
 				golesLocal_1.setText(String.valueOf(partido.getMarcadorLocal_1())); // Goles locales del partido 1
 				golesVisitante_1.setText(String.valueOf(partido.getMarcadorVisitante_1())); // Goles visitantes del partido 1
 				golesLocal_2.setText(String.valueOf(partido.getMarcadorLocal_2())); // Goles locales del partido 2
@@ -147,6 +148,7 @@ public class VentanaMain extends JFrame {
 				golesVisitante_3.setText(String.valueOf(partido.getMarcadorVisitante_3())); // Goles visitantes del partido 3
 				fill=true;
 				break;
+				}
 			}
 		}
 		
