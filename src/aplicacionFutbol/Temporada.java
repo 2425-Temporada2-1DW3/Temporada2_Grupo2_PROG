@@ -10,17 +10,17 @@ import java.util.List;
 
 public class Temporada implements Serializable {
 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 312844068744540680L;
 
-
-    private static final long serialVersionUID = 1L;
-
-    private int ano;
-
+	private int ano;
     private List<Equipo> equipos;
 
     
-    public Temporada() {
-    	this.ano = 0000;
+    public Temporada(int ano) {
+    	this.ano = ano;
     	List<Equipo> EquiposVacios = new ArrayList<>();
     	for(int i=0;i<6;i++) {
     		EquiposVacios.add(new Equipo());

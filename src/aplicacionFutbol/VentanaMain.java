@@ -74,7 +74,7 @@ public class VentanaMain extends JFrame {
 	public int temporadaActual;
 	String temporada;
 	public static int jornadaEnJuego = 0;
-	private static ArrayList<Partido> matrizJornadas = new ArrayList<>();
+	public static ArrayList<Partido> matrizJornadas = new ArrayList<>();
 	// Etiquetas para mostrar los nombres de los equipos locales y visitantes
 	private JLabel lblLocal_1 = new JLabel("Local 1");
 	private JLabel lblVisitante_1 = new JLabel("Visitante 1");
@@ -320,9 +320,9 @@ public class VentanaMain extends JFrame {
 	}
 
 	private void generarJornadasXML(int temporada, int jornada) {
-		partido = new Partido(temporada, jornada, Integer.parseInt(golesLocal_1.getText()), Integer.parseInt(golesVisitante_1.getText()), Integer.parseInt(golesLocal_2.getText()), Integer.parseInt(golesVisitante_2.getText()), Integer.parseInt(golesLocal_3.getText()), Integer.parseInt(golesVisitante_3.getText()));
-		matrizJornadas.add(partido);
-		GrabarJornadas("Jornadas.ser");
+	    partido = new Partido(temporada, jornada, Integer.parseInt(golesLocal_1.getText()), Integer.parseInt(golesVisitante_1.getText()), Integer.parseInt(golesLocal_2.getText()), Integer.parseInt(golesVisitante_2.getText()), Integer.parseInt(golesLocal_3.getText()), Integer.parseInt(golesVisitante_3.getText()));
+	    matrizJornadas.add(partido);
+	    GrabarJornadas("Jornadas.ser");
 	}
 
 	private void generarXML() {
@@ -668,6 +668,13 @@ public class VentanaMain extends JFrame {
 					JOptionPane.showMessageDialog(tablaClasificacion,"La jornada " + (jornadaEnJuego + 1) + " todavia no ha sido jugada."); // Mensaje de éxito
 				} else {
 				VentanaIniciarTemporada vit = new VentanaIniciarTemporada();
+				// damos comienzo a la nueva temporada,
+				/* 1. se crea el objeto Temporada
+				 * 2. se añade a Temporadas
+				 * 3. añade los equipos 
+				 * 4. añade los jugadores
+				 * */
+				//Temporada t = new Temporada(año)
 				// la muestro
 				vit.setVisible(true);
 				
@@ -736,34 +743,32 @@ public class VentanaMain extends JFrame {
 	}
 
 	public static void cargarJornadas(String archivo) {
-		 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
-	            // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
-	            Object obj;
-	            while ((obj = ois.readObject()) != null) {
-	                if (obj instanceof Partido) {
-	                    Partido partido = (Partido) obj;
-	                    matrizJornadas.addLast(partido);
-	                }
+	    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+	        Object obj;
+	        while ((obj = ois.readObject()) != null) {
+	            if (obj instanceof Partido) {
+	                Partido partido = (Partido) obj;
+	                matrizJornadas.addLast(partido);
 	            }
-	        } catch (EOFException e) {
-	            // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
-	            System.out.println("Archivo cargado completamente.");
-	        } catch (FileNotFoundException e) {
-	            System.err.println("El archivo no existe: " + archivo);
-	        } catch (IOException | ClassNotFoundException e) {
-	            e.printStackTrace();
 	        }
+	    } catch (EOFException e) {
+	        System.out.println("Archivo cargado completamente.");
+	    } catch (FileNotFoundException e) {
+	        System.err.println("El archivo no existe: " + archivo);
+	    } catch (IOException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	public static void GrabarJornadas(String nombreArchivo) {
-		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
-			 for (int i = 0; i < matrizJornadas.size(); i++) {
-	                oos.writeObject(matrizJornadas.get(i)); // Escribir cada objeto
-	            }
-	            System.out.println("Lista guardada en objetos.ser");
-	        } catch (IOException e) {
-	            e.printStackTrace();
+	    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
+	        for (int i = 0; i < matrizJornadas.size(); i++) {
+	            oos.writeObject(matrizJornadas.get(i));
 	        }
+	        System.out.println("Lista guardada en " + nombreArchivo);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	private void CambiarJornadaEditable() {
@@ -852,31 +857,27 @@ public class VentanaMain extends JFrame {
 
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
-		// Ordenar la lista de equipos según los puntos, goles a favor y diferencia de goles
-		Collections.sort(listaEquipos, new Comparator<Equipo>() {
-			@Override
-			public int compare(Equipo e1, Equipo e2) {
-				// Primero comparar por puntos
-				int puntosComparar = Integer.compare(e2.getPuntos(), e1.getPuntos());
-				// Si los puntos son iguales, comparar por goles a favor
-				if (puntosComparar == 0) {
-					int golesFavorComparar = Integer.compare(e2.getGolesFavor(), e1.getGolesFavor());
-					// Si los goles a favor son iguales, comparar por diferencia de goles
-					if (golesFavorComparar == 0) {
-						return Integer.compare(e2.getDiferenciaGoles(), e1.getDiferenciaGoles());
-					}
-					return golesFavorComparar; // Retornar comparación de goles a favor
-				}
-				return puntosComparar; // Retornar comparación de puntos
-			}
-		});
-		
-		modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
-		for (int i = 0; i < listaEquipos.size(); i++) { // Iterar sobre la lista de equipos
-			Equipo equipo = listaEquipos.get(i); // Obtener el equipo actual
-			modeloTablaClasificacion.addRow(new Object[] { i + 1, equipo.getNombre(), equipo.getPuntos(),
-					equipo.getGolesFavor(), equipo.getGolesContra(), equipo.getDiferenciaGoles() }); // Añadir fila a la tabla
-		}
+	    Collections.sort(listaEquipos, new Comparator<Equipo>() {
+	        @Override
+	        public int compare(Equipo e1, Equipo e2) {
+	            int puntosComparar = Integer.compare(e2.getPuntos(), e1.getPuntos());
+	            if (puntosComparar == 0) {
+	                int golesFavorComparar = Integer.compare(e2.getGolesFavor(), e1.getGolesFavor());
+	                if (golesFavorComparar == 0) {
+	                    return Integer.compare(e2.getDiferenciaGoles(), e1.getDiferenciaGoles());
+	                }
+	                return golesFavorComparar;
+	            }
+	            return puntosComparar;
+	        }
+	    });
+
+	    modeloTablaClasificacion.setRowCount(0);
+	    for (int i = 0; i < listaEquipos.size(); i++) {
+	        Equipo equipo = listaEquipos.get(i);
+	        modeloTablaClasificacion.addRow(new Object[] { i + 1, equipo.getNombre(), equipo.getPuntos(),
+	                equipo.getGolesFavor(), equipo.getGolesContra(), equipo.getDiferenciaGoles() });
+	    }
 	}
 
 	// Clase interna que representa a un equipo en la liga
