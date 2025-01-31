@@ -1,14 +1,13 @@
 package aplicacionFutbol;
 
-// Importación de bibliotecas necesarias para la interfaz gráfica y otras funcionalidades
-import java.awt.BorderLayout; // Clase para gestionar el diseño de la ventana
-import java.awt.Color; // Clase para manejar colores
-import java.awt.EventQueue; // Clase para gestionar el hilo de eventos
-import java.awt.Font; // Clase para manejar fuentes de texto
-import java.awt.Image; // Clase para manejar imágenes
-import java.awt.Toolkit; // Clase para obtener recursos del sistema
-import java.awt.event.FocusAdapter; // Clase para manejar eventos de enfoque
-import java.awt.event.FocusEvent; // Clase para eventos de enfoque
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.EOFException;
@@ -19,24 +18,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList; // Clase para manejar listas dinámicas
-import java.util.Collections; // Clase para colecciones de objetos
-import java.util.Comparator; // Clase para comparar objetos
-import java.util.List; // Interfaz para listas
-
-import javax.swing.BoxLayout; // Clase para gestionar un diseño de caja
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon; // Clase para manejar iconos de imagen
-import javax.swing.JButton; // Clase para crear botones
-import javax.swing.JComboBox; // Clase para crear listas desplegables
-import javax.swing.JFrame; // Clase para crear la ventana principal
-import javax.swing.JLabel; // Clase para crear etiquetas de texto
-import javax.swing.JOptionPane; // Clase para mostrar diálogos de mensajes
-import javax.swing.JPanel; // Clase para crear paneles
-import javax.swing.JScrollPane; // Clase para crear paneles con desplazamiento
-import javax.swing.JTable; // Clase para crear tablas
-import javax.swing.JTextField; // Clase para crear campos de texto
-import javax.swing.border.EmptyBorder; // Clase para manejar bordes vacíos
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,16 +44,19 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.FlowLayout;
 import java.awt.Component;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent; // Clase para manejar el modelo de la tabla
+import java.awt.event.ActionEvent;// Clase para manejar el modelo de la tabla
 
 /**
  * 
@@ -280,12 +281,11 @@ public class VentanaMain extends JFrame {
 						return; // Salir del método y no guardar resultados para este partido
 					}
 
-				
+					resultadoLocal = Integer.parseInt(golesLocal_3.getText());
+					resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
 				}
 
 				// Guardar resultados
-				resultadoLocal = Integer.parseInt(golesLocal_3.getText());
-				resultadoVisitante = Integer.parseInt(golesVisitante_3.getText());
 				resultados.get(jornadaActual)[i][0] = resultadoLocal; // Guardar goles del local
 				resultados.get(jornadaActual)[i][1] = resultadoVisitante; // Guardar goles del visitante
 				// Actualizar equipos con los resultados
@@ -323,7 +323,7 @@ public class VentanaMain extends JFrame {
 		partido = new Partido(temporada, jornada, Integer.parseInt(golesLocal_1.getText()), Integer.parseInt(golesVisitante_1.getText()), Integer.parseInt(golesLocal_2.getText()), Integer.parseInt(golesVisitante_2.getText()), Integer.parseInt(golesLocal_3.getText()), Integer.parseInt(golesVisitante_3.getText()));
 		matrizJornadas.add(partido);
 		GrabarJornadas("Jornadas.ser");
-}
+	}
 
 	private void generarXML() {
 		//Se rellena la matriz con los datos correspondientes
@@ -459,8 +459,6 @@ public class VentanaMain extends JFrame {
 		panel.setBackground(new Color(240, 240, 240)); // Color de fondo
 		izquierda.add(panel, BorderLayout.NORTH); // Añadir panel a la parte superior del panel izquierdo
 		
-		
-
 		// Añadir las opciones al JComboBox para seleccionar la jornada
 		for (int i = 1; i <= 10; i++) {
 			comboBox.addItem("Jornada " + i); // Añadir jornadas al JComboBox
@@ -493,8 +491,6 @@ public class VentanaMain extends JFrame {
 				actualizarComboBox(); // Actualiza la vista
 		});
 		
-		
-
 		panel.add(btnSiguiente); // Añadir botón siguiente al panel
 		JPanel panel_1 = new JPanel(); // Panel para mostrar los resultados de los partidos
 		panel_1.setBackground(new Color(240, 240, 240)); // Color de fondo
@@ -726,6 +722,13 @@ public class VentanaMain extends JFrame {
 		actualizarComboBox();
 		// Centrar la ventana en la pantalla
 		setLocationRelativeTo(null);
+
+		// Añadir botón Exportar PDF
+		JButton btnExportarPDF = new JButton("Exportar PDF");
+		btnExportarPDF.setBackground(new Color(0, 120, 215));
+		btnExportarPDF.setForeground(Color.WHITE);
+		btnExportarPDF.addActionListener(e -> exportarTablaAPDF());
+		panel_3.add(btnExportarPDF);
 	}
 	
 	private void actualizarComboBox() {
@@ -751,7 +754,7 @@ public class VentanaMain extends JFrame {
 	            e.printStackTrace();
 	        }
 	}
-	
+
 	public static void GrabarJornadas(String nombreArchivo) {
 		 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
 			 for (int i = 0; i < matrizJornadas.size(); i++) {
@@ -782,23 +785,22 @@ public class VentanaMain extends JFrame {
 		golesVisitante_2.setEnabled(!editable);
 		golesLocal_3.setEnabled(!editable);
 		golesVisitante_3.setEnabled(!editable);
-		
 	}
 	
 	// Agregar un KeyListener al JTextField
-			private void agregarValidacionJornada(JTextField textField) {
-				textField.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-					if (jornadaActual != jornadaEnJuego) {
-						// Mostrar mensaje de error
-						JOptionPane.showMessageDialog(tablaClasificacion,"La jornada " + (jornadaEnJuego + 1) + " todavia no ha sido jugada."); // Mensaje de éxito
-						// Consumir el evento para evitar que se escriba texto
-						e.consume();
-					}
+	private void agregarValidacionJornada(JTextField textField) {
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (jornadaActual != jornadaEnJuego) {
+					// Mostrar mensaje de error
+					JOptionPane.showMessageDialog(tablaClasificacion,"La jornada " + (jornadaEnJuego + 1) + " todavia no ha sido jugada."); // Mensaje de éxito
+					// Consumir el evento para evitar que se escriba texto
+					e.consume();
 				}
-			});
 			}
+		});
+	}
 		
 	private static void cargarDatosDesdeXML(DefaultTableModel model, String filePath, String temporadaSeleccionada) {
         try {
@@ -942,4 +944,31 @@ public class VentanaMain extends JFrame {
 			matrizEquipos[matrizEquipos.length][5][0]= "6"; 
 		}	
 	}
+
+	// Método para exportar la tabla de clasificación a un archivo PDF
+    private void exportarTablaAPDF() {
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream("clasificacion.pdf"));
+            document.open();
+            PdfPTable pdfTable = new PdfPTable(tablaClasificacion.getColumnCount());
+            for (int i = 0; i < tablaClasificacion.getColumnCount(); i++) {
+                PdfPCell cell = new PdfPCell(new Paragraph(tablaClasificacion.getColumnName(i)));
+                cell.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+                pdfTable.addCell(cell);
+            }
+            for (int rows = 0; rows < tablaClasificacion.getRowCount(); rows++) {
+                for (int cols = 0; cols < tablaClasificacion.getColumnCount(); cols++) {
+                    pdfTable.addCell(tablaClasificacion.getModel().getValueAt(rows, cols).toString());
+                }
+            }
+            document.add(pdfTable);
+            document.close();
+            JOptionPane.showMessageDialog(this, "Tabla exportada a PDF correctamente.");
+        } catch (DocumentException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ... (resto del código)
 }
