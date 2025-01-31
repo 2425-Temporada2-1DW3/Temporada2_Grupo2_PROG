@@ -11,12 +11,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -26,21 +29,26 @@ import javax.swing.JButton;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import javax.swing.ImageIcon;
 
 public class VentanaGestionEquipos extends JFrame implements ActionListener, WindowListener {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialUID = 1L;
     private JPanel contentPane;
     private JButton btnAñadir;
     private JButton btnEliminar;
+    private JButton btnAñadirEscudo;
     private JList<Equipo> lstEquipos;
-    private static DefaultListModel<Equipo> dlm;
+    public static DefaultListModel<Equipo> dlm;
     private boolean modificado = false;
     private static boolean error = false;
     private boolean modificando = false;
+    private static String carpetaDestino = "C:/MiAplicacion/imagenes/"; // Carpeta fija
 
     private JTextField textFieldNombre;
     private JTextField textFieldAno;
+    private JLabel lblImagen;
 
     /**
      * Launch the application.
@@ -54,6 +62,7 @@ public class VentanaGestionEquipos extends JFrame implements ActionListener, Win
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                crearCarpetaCentral();
             }
         });
     }
@@ -95,6 +104,10 @@ public class VentanaGestionEquipos extends JFrame implements ActionListener, Win
         btnEliminar.addActionListener(this);
         body.add(btnEliminar, "cell 0 1,growx");
 
+        btnAñadirEscudo = new JButton("Añadir escudo");
+        btnAñadirEscudo.addActionListener(this);
+        body.add(btnAñadirEscudo, "cell 1 1");
+
         // ********************************
         // Modelo de la lista
         // ********************************
@@ -116,6 +129,9 @@ public class VentanaGestionEquipos extends JFrame implements ActionListener, Win
         body.add(textFieldAno, "cell 1 0,alignx left,aligny top");
         textFieldAno.setColumns(10);
 
+        lblImagen = new JLabel("[Imagen]");
+        body.add(lblImagen, "cell 2 2,alignx center");
+
         JPanel footer = new JPanel();
         contentPane.add(footer, BorderLayout.SOUTH);
 
@@ -123,6 +139,19 @@ public class VentanaGestionEquipos extends JFrame implements ActionListener, Win
         addWindowListener(this);
 
         cargarEquipos("Equipos.ser");
+
+        // Añadir un ListSelectionListener para actualizar la imagen cuando se selecciona un equipo
+        lstEquipos.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                Equipo equipoSeleccionado = lstEquipos.getSelectedValue();
+                if (equipoSeleccionado != null && equipoSeleccionado.getRutaImagen() != null) {
+                    lblImagen.setIcon(new ImageIcon(equipoSeleccionado.getRutaImagen()));
+                } else {
+                    lblImagen.setIcon(null);
+                    lblImagen.setText("[Imagen]");
+                }
+            }
+        });
     }
 
     @Override
@@ -212,7 +241,7 @@ public class VentanaGestionEquipos extends JFrame implements ActionListener, Win
             // Indicar que los valores han sido modificados
             GrabarEquipos("Equipos.ser", dlm);
         } else if (o == btnEliminar) {
-            // Obtener los elementos seleccionados de la lista
+        	  // Obtener los elementos seleccionados de la lista
             List<Equipo> ValSelec = lstEquipos.getSelectedValuesList();
             int[] IndSelec = lstEquipos.getSelectedIndices();
 
@@ -224,6 +253,72 @@ public class VentanaGestionEquipos extends JFrame implements ActionListener, Win
                     dlm.removeElementAt(IndSelec[i]);
                 }
                 GrabarEquipos("Equipos.ser", dlm);
+            }
+        } else if (o == btnAñadirEscudo) {
+            // Obtener los elementos seleccionados de la lista
+            List<Equipo> ValSelec = lstEquipos.getSelectedValuesList();
+            int[] IndSelec = lstEquipos.getSelectedIndices();
+
+            // Comprobar que solo haya un elemento seleccionado
+            if (IndSelec.length <= 0 || IndSelec.length > 1) {
+                JOptionPane.showMessageDialog(this, "Debe seleccionar un equipo", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                /*
+                 * ABRO EXPLORADOR DE ARCHIVOS
+                 **/
+                // Crear un JFileChooser
+                JFileChooser fileChooser = new JFileChooser();
+
+                // sera 1 cuando se pulsa cancelar o X y 0 cuando se pulsa abrir 
+                int respuesta = fileChooser.showOpenDialog(null);
+                // obtengo el objeto seleccionado 
+                Equipo equipo = ValSelec.get(0);
+
+                if (respuesta == JFileChooser.APPROVE_OPTION) {
+                    /* OBTENGO DATOS DEL ARCHIVO SELECCIONADO */
+                    // si pulsa abrir
+                    // obtengo el archivo seleccionado
+                    File selectedFile = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                    // obtengo el nombre del archivo
+                    String fileName = fileChooser.getSelectedFile().getName();
+                    // obtengo la ruta ORIGEN del archivo seleccionado
+                    String filePath = selectedFile.getAbsolutePath();
+
+                    /* OBTENGO DATOS DEL ARCHIVO DESTINO */
+                    // creo la ruta DESTINO;
+                    File archivoDestino = new File(carpetaDestino + fileName);
+                    // obtengo el str de la ruta DESTINO
+                    String archivoDestinoStr = archivoDestino.getAbsolutePath();
+
+                    /* COMPRUEBO QUE NO HAYA UN EQUIPO CON ESA MISMA RUTA DE FOTO */
+                    if (fotoRepe(archivoDestinoStr)) {
+                        JOptionPane.showMessageDialog(null, "No puede tener dos equipos con la misma imagen.");
+                    } else {
+                        /* COPIO LA IMAGEN A LA CARPETA CENTRAL */
+                        try {
+                            // Copiar la imagen seleccionada a la carpeta central
+                            Files.copy(selectedFile.toPath(), archivoDestino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                            // Actualizar el JLabel con la imagen copiada
+                            lblImagen.setIcon(new ImageIcon(archivoDestino.getAbsolutePath()));
+
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(null, "Error al copiar la imagen en " + carpetaDestino + ".");
+                            e.printStackTrace();
+                        }
+
+                        // MUESTRO LA IMAGEN EN EL JFRAME
+                        lblImagen.setText("");
+                        lblImagen.setIcon(new ImageIcon(filePath));
+
+                        // APLICO LA NUEVA RUTA AL EQUIPO
+                        equipo.setRutaImagen(archivoDestinoStr);
+                        // aplicamos los cambios en el dlm
+                        dlm.set(IndSelec[0], equipo);
+                        // aplicamos los cambios en el .ser
+                        GrabarEquipos("Equipos.ser", dlm);
+                    }
+                }
             }
         }
     }
@@ -267,4 +362,40 @@ public class VentanaGestionEquipos extends JFrame implements ActionListener, Win
             e.printStackTrace();
         }
     }
-}
+
+    public static void crearCarpetaCentral() {
+        File carpeta = new File(carpetaDestino);
+        if (!carpeta.exists()) {
+            if (carpeta.mkdirs()) {
+                System.out.println("Carpeta creada en: " + carpetaDestino);
+            } else {
+                System.out.println("No se pudo crear la carpeta.");
+            }
+        }
+    }
+
+    public static boolean fotoRepe(String rutaImagenNueva) {
+        String rutaImagenVieja;
+        for (int i = 0; i < dlm.size(); i++) {
+            rutaImagenVieja = dlm.get(i).getRutaImagen();
+            if (rutaImagenVieja != null && rutaImagenVieja.equals(rutaImagenNueva)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static DefaultListModel<Equipo> getDlm() {
+        if (dlm == null) {
+            dlm = new DefaultListModel<>();
+        }
+        return dlm;
+    }
+    
+	public static void setDlm(DefaultListModel<Equipo> dlm) {
+		VentanaGestionEquipos.dlm = dlm;
+	}
+    
+    
+
+        }
