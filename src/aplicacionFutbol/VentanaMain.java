@@ -699,6 +699,10 @@ public class VentanaMain extends JFrame {
 		});
 		
 		panel_3.add(btnUsuarios);
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		
 		panel_3.add(btnNewButton);
 		
