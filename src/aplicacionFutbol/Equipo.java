@@ -10,17 +10,9 @@ public class Equipo implements Serializable {
     private String nombre_e; // Cambiado a variable de instancia
     private List<Jugador> jugadores;
     private int ano;
+    private int temporada;
     private String rutaImagen; // Añadido para la ruta de la imagen
-    
-    public Equipo() {
-        this.nombre_e = "Equipo vacio";
-        this.jugadores = new ArrayList<>(); // Inicializar la lista de jugadores
-        this.jugadores.add(new Jugador());
-        this.jugadores.add(new Jugador());
-        this.jugadores.add(new Jugador());
-        this.jugadores.add(new Jugador());
-        this.jugadores.add(new Jugador());
-    }
+
     // Constructor equipo lleno
     public Equipo(String nombre, Jugador j1, Jugador j2, Jugador j3, Jugador j4, Jugador j5) {
         this.nombre_e = nombre;
@@ -66,6 +58,14 @@ public class Equipo implements Serializable {
 
     public void setAno(int ano) {
         this.ano = ano;
+    }
+    
+    public int getTemporada(int temporada) {
+    	return temporada;
+    }
+    
+    public void setTemporada(int temporada) {
+    	this.temporada = temporada;
     }
 
     public String getRutaImagen() {
