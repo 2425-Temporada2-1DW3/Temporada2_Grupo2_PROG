@@ -17,6 +17,7 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
     private DefaultListModel<String> dlmEquipos; // Modelo para la lista de equipos
     private JButton btnSiguiente;
     private JLabel lblEquipo;
+    private int NumeroEquipo = 0;
     private int jugadoresSeleccionados = 0;
     private String equipoSeleccionado = "";
     private List<Equipo> equipos;
@@ -145,8 +146,9 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
             // Validar que se seleccionen 5 jugadores
             if (seleccionados.size() == 5) {
                 // Agregar los jugadores seleccionados al equipo
-                jugadoresSeleccionadosEquipo.addAll(seleccionados);
-
+            	Equipo equipo = new Equipo (lstEquipos.getName(), null, null, null, null, null);
+            	
+            	
                 // Agregar estos jugadores a la lista de jugadores ya seleccionados
                 jugadoresYaSeleccionados.addAll(seleccionados);
 
