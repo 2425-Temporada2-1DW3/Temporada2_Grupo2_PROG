@@ -2,113 +2,91 @@ package aplicacionFutbol;
 
 import java.io.Serializable;
 
-public class Partido implements Serializable{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4919146540552823915L;
-	private int temporada;
-	private int jornada;
-	private int marcadorLocal_1;
-	private int marcadorVisitante_1;
-	private int marcadorLocal_2;
-	private int marcadorVisitante_2;
-	private int marcadorLocal_3;
-	private int marcadorVisitante_3;
-	
-	// constructor manual
-	public Partido(int t, int j, int ml1, int mv1, int ml2, int mv2, int ml3, int mv3) {
-		this.temporada= t;
-		this.jornada = j;
-		this.marcadorLocal_1 = ml1;
-		this.marcadorLocal_2 = ml2;
-		this.marcadorLocal_3 = ml3;
-		this.marcadorVisitante_1 = mv1;
-		this.marcadorVisitante_2 = mv2;
-		this.marcadorVisitante_3 = mv3;
-	}
+public class Partido implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private int temporadaNumero;
+    private int jornadaNumero;
+    private int marcadorLocal_1;
+    private int marcadorVisitante_1;
+    private int marcadorLocal_2;
+    private int marcadorVisitante_2;
+    private int marcadorLocal_3;
+    private int marcadorVisitante_3;
 
-	public Partido() {
-		temporada= 1;
-		jornada = 0;
-		marcadorLocal_1 = 0;
-		marcadorLocal_2 = 0;
-		marcadorLocal_3 = 0;
-		marcadorVisitante_1 = 0;
-		marcadorVisitante_2 = 0;
-		marcadorVisitante_3 = 0;
-	}
+    public Partido() {
+    }
 
-	@Override
-	public String toString() {
-		return marcadorLocal_1 +" - "+ marcadorVisitante_1+"\n"+marcadorLocal_2 +" - "+ marcadorVisitante_2+"\n"+marcadorLocal_3 +" - "+ marcadorVisitante_3+"\n";
-	}
+    public Partido(int temporadaNumero, int jornadaNumero, int marcadorLocal_1, int marcadorVisitante_1, int marcadorLocal_2, int marcadorVisitante_2, int marcadorLocal_3, int marcadorVisitante_3) {
+        this.temporadaNumero = temporadaNumero;
+        this.jornadaNumero = jornadaNumero;
+        this.marcadorLocal_1 = marcadorLocal_1;
+        this.marcadorVisitante_1 = marcadorVisitante_1;
+        this.marcadorLocal_2 = marcadorLocal_2;
+        this.marcadorVisitante_2 = marcadorVisitante_2;
+        this.marcadorLocal_3 = marcadorLocal_3;
+        this.marcadorVisitante_3 = marcadorVisitante_3;
+    }
 
-	//Getters
-	public int getTemporadaNumero() {
-		return temporada;
-	}
-	
-	public int getJornadaNumero() {
-		return jornada;
-	}
+    public int getTemporadaNumero() {
+        return temporadaNumero;
+    }
 
-	public int getMarcadorLocal_1() {
-		return marcadorLocal_1;
-	}
+    public void setTemporadaNumero(int temporadaNumero) {
+        this.temporadaNumero = temporadaNumero;
+    }
 
-	public int getMarcadorVisitante_1() {
-		return marcadorVisitante_1;
-	}
-	
-	public int getMarcadorLocal_2() {
-		return marcadorLocal_2;
-	}
+    public int getJornadaNumero() {
+        return jornadaNumero;
+    }
 
-	public int getMarcadorVisitante_2() {
-		return marcadorVisitante_2;
-	}
-	
-	public int getMarcadorLocal_3() {
-		return marcadorLocal_3;
-	}
+    public void setJornadaNumero(int jornadaNumero) {
+        this.jornadaNumero = jornadaNumero;
+    }
 
-	public int getMarcadorVisitante_3() {
-		return marcadorVisitante_3;
-	}
-	
-	
-	//Setters
-	public void setTemporadaNumero(int t) {
-		this.temporada = t;
-	}
-	
-	public void setJornadaNumero(int j) {
-		this.jornada = j;
-	}
+    public int getMarcadorLocal_1() {
+        return marcadorLocal_1;
+    }
 
-	public void setMarcadorLocal1(int m) {
-		this.marcadorLocal_1 = m;
-	}
-	
-	public void setMarcadorLocal2(int m) {
-		this.marcadorLocal_2 = m;
-	}
-	
-	public void setMarcadorLocal3(int m) {
-		this.marcadorLocal_3 = m;
-	}
+    public void setMarcadorLocal_1(int marcadorLocal_1) {
+        this.marcadorLocal_1 = marcadorLocal_1;
+    }
 
-	public void setMarcadorVisitante1(int m) {
-		this.marcadorVisitante_1 = m;
-	}
-	
-	public void setMarcadorVisitante2(int m) {
-		this.marcadorVisitante_2 = m;
-	}
-	
-	public void setMarcadorVisitante3 (int m) {
-		this.marcadorVisitante_3 = m;
-	}
-}
+    public int getMarcadorVisitante_1() {
+        return marcadorVisitante_1;
+    }
+
+    public void setMarcadorVisitante_1(int marcadorVisitante_1) {
+        this.marcadorVisitante_1 = marcadorVisitante_1;
+    }
+
+    public int getMarcadorLocal_2() {
+        return marcadorLocal_2;
+    }
+
+    public void setMarcadorLocal_2(int marcadorLocal_2) {
+        this.marcadorLocal_2 = marcadorLocal_2;
+    }
+
+    public int getMarcadorVisitante_2() {
+        return marcadorVisitante_2;
+    }
+
+    public void setMarcadorVisitante_2(int marcadorVisitante_2) {
+        this.marcadorVisitante_2 = marcadorVisitante_2;
+    }
+
+    public int getMarcadorLocal_3() {
+        return marcadorLocal_3;
+    }
+
+    public void setMarcadorLocal_3(int marcadorLocal_3) {
+        this.marcadorLocal_3 = marcadorLocal_3;
+    }
+
+    public int getMarcadorVisitante_3() {
+        return marcadorVisitante_3;
+    }
+
+    public void setMarcadorVisitante_3(int marcadorVisitante_3) {
+        this.marcadorVisitante_3 = marcadorVisitante_3;
+    }

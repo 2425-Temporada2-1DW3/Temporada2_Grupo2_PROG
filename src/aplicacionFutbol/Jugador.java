@@ -78,7 +78,5 @@ public class Jugador implements Serializable{
 		this.rutaImagen = rutaImagen;
 	}
 	
-	
-	
 
 }
