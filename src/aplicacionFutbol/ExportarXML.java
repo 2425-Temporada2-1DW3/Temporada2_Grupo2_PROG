@@ -90,7 +90,7 @@ public class ExportarXML {
             }
 
             // Especifica la ruta absoluta para guardar el archivo XML
-            String filePath = "C:\\Users\\ik_1dw3a\\Desktopclasificacion.xml";
+            String filePath = "C:\\Desktopclasificacion.xml";
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);

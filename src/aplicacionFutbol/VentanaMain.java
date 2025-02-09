@@ -47,11 +47,11 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import com.itextpdf.text.DocumentException;
+/*import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfWriter;/*/
 import java.awt.FlowLayout;
 import java.awt.Component;
 import javax.swing.SwingConstants;
@@ -100,7 +100,8 @@ public class VentanaMain extends JFrame {
 	private List<String[][]> jornadas; // Almacena las jornadas y los partidos correspondientes
 	private JTable tablaClasificacion; // Tabla para mostrar la clasificación de los equipos
 	private DefaultTableModel modeloTablaClasificacion; // Modelo de la tabla de clasificación
-	private List<Equipo> listaEquipos; // Lista de objetos Equipo que representan a los equipos en la liga
+	private List<EquipoInterno> listaEquipos; // Lista de objetos Equipo que representan a los equipos en la liga
+	private List<Temporada> listaTemporadas;
 	private boolean modoSoloLectura = false; // Variable para controlar el modo de solo lectura
 	private final JComboBox<String> comboBox = new JComboBox<>(); // ComboBox para seleccionar la jornada
 	private JLabel lblRol = new JLabel(); // JLabel para mostrar el rol del usuario
@@ -174,7 +175,7 @@ public class VentanaMain extends JFrame {
 
 		// Crea objetos Equipo para cada equipo en la lista
 		for (String equipo : equipos) {
-			listaEquipos.add(new Equipo(equipo));
+			listaEquipos.add(new EquipoInterno(equipo));
 		}
 
 		// Genera los partidos para cada jornada
@@ -238,6 +239,9 @@ public class VentanaMain extends JFrame {
 		};
 	
 	public static String[] temporadas = {"2023", "2024"};
+	private final JButton btnJugadores = new JButton("Jugadores");
+	private final JButton btnXML = new JButton("generate XML");
+	
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -394,7 +398,7 @@ public class VentanaMain extends JFrame {
             }
 
             // Especifica la ruta absoluta para guardar el archivo XML
-            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
+            String filePath = "C:\\xampp\\htdocs\\clasificacion.xml";
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
@@ -411,7 +415,7 @@ public class VentanaMain extends JFrame {
 
 	// Método para actualizar los datos de los equipos después de un partido
 	private void actualizarEquipos(String equipoNombre, int golesFavor, int golesContra) {
-		for (Equipo equipo : listaEquipos) { // Iterar sobre la lista de equipos
+		for (EquipoInterno equipo : listaEquipos) { // Iterar sobre la lista de equipos
 			if (equipo.getNombre().equals(equipoNombre)) { // Buscar el equipo correspondiente
 				equipo.agregarResultado(golesFavor, golesContra); // Actualizar goles
 				if (golesFavor > golesContra) {
@@ -652,13 +656,13 @@ public class VentanaMain extends JFrame {
 		temporada = String.valueOf(cbTemporadas.getSelectedItem());
 		temporada = temporada.substring(10);
 		
-		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
+		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\clasificacion.xml", temporada); // Actualiza la vista
 				
 		cbTemporadas.addActionListener(e -> {
 			temporada = String.valueOf(cbTemporadas.getSelectedItem());
 			temporada = temporada.substring(10);
 			modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
-			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
+			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\clasificacion.xml", temporada); // Actualiza la vista
 			mostrarJornadaActual();
 		});
 		
@@ -697,11 +701,24 @@ public class VentanaMain extends JFrame {
 			}
 		});
 		
+		panel_3.add(btnXML);
+		btnXML.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent x) {
+				GenerarTemporadasXML();
+			}
+		});
+		
 		panel_3.add(btnUsuarios);
+		btnJugadores.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		
+		panel_3.add(btnJugadores);
 		
 		panel_3.add(btnEquipos);
 		btnEquipos.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent f) {
 				VentanaGestionEquipos vge = new VentanaGestionEquipos();
 				// la muestro
 				vge.setVisible(true);
@@ -734,8 +751,105 @@ public class VentanaMain extends JFrame {
 		JButton btnExportarPDF = new JButton("Exportar PDF");
 		btnExportarPDF.setBackground(new Color(0, 120, 215));
 		btnExportarPDF.setForeground(Color.WHITE);
-		btnExportarPDF.addActionListener(e -> exportarTablaAPDF());
+		/*btnExportarPDF.addActionListener(e -> exportarTablaAPDF());/*/
 		panel_3.add(btnExportarPDF);
+	}
+	
+	public void cargarTemporadas(String archivo) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+               // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
+               Object obj;
+               while ((obj = ois.readObject()) != null) {
+                   if (obj instanceof Temporada) {
+                       Temporada temp = (Temporada) obj;
+                       listaTemporadas.add(temp);
+                   }
+               }
+           } catch (EOFException e) {
+               // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
+               System.out.println("Archivo cargado completamente :(");
+           } catch (FileNotFoundException e) {
+               System.err.println("El archivo no existe: " + archivo);
+           } catch (IOException | ClassNotFoundException e) {
+               e.printStackTrace();
+           }
+   } 
+	
+	private void GenerarTemporadasXML() {
+		cargarTemporadas("Temporadas.ser");
+		listaTemporadas = VentanaIniciarTemporada.tmps.getTemporadas();
+		
+		//Se genera el archivo xml
+		try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement("tempos");//raiz
+            doc.appendChild(rootElement);
+
+            for (int t = 0; t < listaTemporadas.size(); t++) {
+            	
+            	Temporada temporada = listaTemporadas.get(t);
+            	
+                Element tempo = doc.createElement("tempo"); //Raiz -> temporada
+                rootElement.appendChild(doc.createTextNode(String.valueOf(temporada.getAno()))); //lo confunde con la Clase
+
+
+                List<Equipo> lstEquipos; 
+                lstEquipos = temporada.getEquipos();
+                
+                for (int e = 0; e < lstEquipos.size(); e++) {
+                	
+                	Equipo equipoActual = lstEquipos.get(e);
+                	
+                    Element Equipo = doc.createElement("teams"); //temporada -> Equipo
+                    tempo.appendChild(doc.createTextNode("teams")); 
+
+                    Element nombre = doc.createElement("nombre");
+                    Equipo.appendChild(doc.createTextNode(equipoActual.getNombre()));
+                    
+                    Element ruta = doc.createElement("ruta");
+                    Equipo.appendChild(doc.createTextNode(equipoActual.getRutaImagen()));
+                    
+                    List<Jugador> lstJugadores; 
+                    lstJugadores = equipoActual.getJugadores();
+
+                    for (int j = 0; j < lstJugadores.size(); j++) {
+                    	
+                    	Jugador jugadorACtual = lstJugadores.get(e);
+                    	
+                        Element jugador = doc.createElement("player"); //temporada -> Equipo
+                        Equipo.appendChild(doc.createTextNode("player")); 
+
+                        Element firstName = doc.createElement("firstName");
+                        jugador.appendChild(doc.createTextNode(jugadorACtual.getNombre()));
+                        
+                        Element lastName = doc.createElement("lastName");
+                        jugador.appendChild(doc.createTextNode(jugadorACtual.getApellidos()));
+                        
+                        Element rutaJugador = doc.createElement("rutaJugador");
+                        jugador.appendChild(doc.createTextNode(jugadorACtual.getRutaImagen()));
+
+                    }
+                }
+            }
+
+            // Especifica la ruta absoluta para guardar el archivo XML
+            String filePath = "C:\\xampp\\htdocs\\clasificacion.xml";
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(filePath));
+            transformer.transform(source, result);
+
+            System.out.println("Archivo XML guardado en " + filePath);
+            System.out.println("");
+
+        } catch (ParserConfigurationException | TransformerException e) {
+            e.printStackTrace();
+        }
+	
 	}
 	
 	private void actualizarComboBox() {
@@ -857,9 +971,9 @@ public class VentanaMain extends JFrame {
 
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
-	    Collections.sort(listaEquipos, new Comparator<Equipo>() {
+	    Collections.sort(listaEquipos, new Comparator<EquipoInterno>() {
 	        @Override
-	        public int compare(Equipo e1, Equipo e2) {
+	        public int compare(EquipoInterno e1, EquipoInterno e2) {
 	            int puntosComparar = Integer.compare(e2.getPuntos(), e1.getPuntos());
 	            if (puntosComparar == 0) {
 	                int golesFavorComparar = Integer.compare(e2.getGolesFavor(), e1.getGolesFavor());
@@ -874,25 +988,35 @@ public class VentanaMain extends JFrame {
 
 	    modeloTablaClasificacion.setRowCount(0);
 	    for (int i = 0; i < listaEquipos.size(); i++) {
-	        Equipo equipo = listaEquipos.get(i);
+	        EquipoInterno equipo = listaEquipos.get(i);
 	        modeloTablaClasificacion.addRow(new Object[] { i + 1, equipo.getNombre(), equipo.getPuntos(),
 	                equipo.getGolesFavor(), equipo.getGolesContra(), equipo.getDiferenciaGoles() });
 	    }
 	}
 
 	// Clase interna que representa a un equipo en la liga
-	class Equipo {
+	class EquipoInterno {
 		private String nombre; // Nombre del equipo
 		private int golesFavor; // Goles a favor del equipo
 		private int golesContra; // Goles en contra del equipo
 		private int puntos; // Puntos acumulados por el equipo
 
 		// Constructor de la clase Equipo
-		public Equipo(String nombre) {
+		public EquipoInterno(String nombre) {
 			this.nombre = nombre; // Asignar el nombre del equipo
 			this.golesFavor = 0; // Inicializar goles a favor
 			this.golesContra = 0; // Inicializar goles en contra
 			this.puntos = 0; // Inicializar puntos
+		}
+
+		public List<Jugador> getJugadores() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String getRutaImagen() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		public String getNombre() {
@@ -947,7 +1071,7 @@ public class VentanaMain extends JFrame {
 	}
 
 	// Método para exportar la tabla de clasificación a un archivo PDF
-    private void exportarTablaAPDF() {
+   /* private void exportarTablaAPDF() {
         com.itextpdf.text.Document document = new com.itextpdf.text.Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream("clasificacion.pdf"));
@@ -969,7 +1093,7 @@ public class VentanaMain extends JFrame {
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     // ... (resto del código)
 }
