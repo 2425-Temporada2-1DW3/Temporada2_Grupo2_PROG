@@ -47,11 +47,11 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import com.itextpdf.text.DocumentException;
+/*import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfWriter;/*/
 import java.awt.FlowLayout;
 import java.awt.Component;
 import javax.swing.SwingConstants;
@@ -751,12 +751,32 @@ public class VentanaMain extends JFrame {
 		JButton btnExportarPDF = new JButton("Exportar PDF");
 		btnExportarPDF.setBackground(new Color(0, 120, 215));
 		btnExportarPDF.setForeground(Color.WHITE);
-		btnExportarPDF.addActionListener(e -> exportarTablaAPDF());
+		/*btnExportarPDF.addActionListener(e -> exportarTablaAPDF());/*/
 		panel_3.add(btnExportarPDF);
 	}
 	
+	public void cargarTemporadas(String archivo) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+               // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
+               Object obj;
+               while ((obj = ois.readObject()) != null) {
+                   if (obj instanceof Temporada) {
+                       Temporada temp = (Temporada) obj;
+                       listaTemporadas.add(temp);
+                   }
+               }
+           } catch (EOFException e) {
+               // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
+               System.out.println("Archivo cargado completamente :(");
+           } catch (FileNotFoundException e) {
+               System.err.println("El archivo no existe: " + archivo);
+           } catch (IOException | ClassNotFoundException e) {
+               e.printStackTrace();
+           }
+   } 
+	
 	private void GenerarTemporadasXML() {
-		
+		cargarTemporadas("Temporadas.ser");
 		listaTemporadas = VentanaIniciarTemporada.tmps.getTemporadas();
 		
 		//Se genera el archivo xml
@@ -1051,7 +1071,7 @@ public class VentanaMain extends JFrame {
 	}
 
 	// Método para exportar la tabla de clasificación a un archivo PDF
-    private void exportarTablaAPDF() {
+   /* private void exportarTablaAPDF() {
         com.itextpdf.text.Document document = new com.itextpdf.text.Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream("clasificacion.pdf"));
@@ -1073,7 +1093,7 @@ public class VentanaMain extends JFrame {
         } catch (DocumentException | FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     // ... (resto del código)
 }
