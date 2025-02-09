@@ -238,6 +238,7 @@ public class VentanaMain extends JFrame {
 		};
 	
 	public static String[] temporadas = {"2023", "2024"};
+	private final JButton btnJugadores = new JButton("Jugadores");
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -698,10 +699,16 @@ public class VentanaMain extends JFrame {
 		});
 		
 		panel_3.add(btnUsuarios);
+		btnJugadores.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		
+		panel_3.add(btnJugadores);
 		
 		panel_3.add(btnEquipos);
 		btnEquipos.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent f) {
 				VentanaGestionEquipos vge = new VentanaGestionEquipos();
 				// la muestro
 				vge.setVisible(true);

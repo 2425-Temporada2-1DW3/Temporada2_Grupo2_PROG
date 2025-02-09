@@ -34,8 +34,11 @@ import javax.swing.ImageIcon;
 
 public class VentanaGestionEquipos extends JFrame implements ActionListener, WindowListener {
 
-    private static final long serialUID = 1L;
-    private JPanel contentPane;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
     private JButton btnAñadir;
     private JButton btnEliminar;
     private JButton btnAñadirEscudo;
