@@ -398,7 +398,7 @@ public class VentanaMain extends JFrame {
             }
 
             // Especifica la ruta absoluta para guardar el archivo XML
-            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
+            String filePath = "C:\\xampp\\htdocs\\clasificacion.xml";
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
@@ -656,13 +656,13 @@ public class VentanaMain extends JFrame {
 		temporada = String.valueOf(cbTemporadas.getSelectedItem());
 		temporada = temporada.substring(10);
 		
-		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
+		cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\clasificacion.xml", temporada); // Actualiza la vista
 				
 		cbTemporadas.addActionListener(e -> {
 			temporada = String.valueOf(cbTemporadas.getSelectedItem());
 			temporada = temporada.substring(10);
 			modeloTablaClasificacion.setRowCount(0); // Limpiar la tabla antes de llenarla
-			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml", temporada); // Actualiza la vista
+			cargarDatosDesdeXML(modeloTablaClasificacion, "C:\\xampp\\htdocs\\clasificacion.xml", temporada); // Actualiza la vista
 			mostrarJornadaActual();
 		});
 		

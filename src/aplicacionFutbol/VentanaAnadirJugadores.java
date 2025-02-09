@@ -158,14 +158,14 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
                 for (Equipo eq : equipos) {
                 	if (eq.getNombre() == equipoSeleccionado) {
                 		eq.setJugadores(seleccionados);
-                		lblEquipo.setText("Hola" + seleccionados);
+                		//lblEquipo.setText("Hola" + seleccionados);
                 	}
                 }
                 
                 // Deshabilitar los jugadores seleccionados
                 for (Jugador jugador : seleccionados) {
                     dlmJugadores.removeElement(jugador);
-                    System.out.println("hola");
+                   // System.out.println("hola");
                 }
 
                 // Marcar el equipo como completado
@@ -179,8 +179,11 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
 
                 // Deshabilitar la selección del equipo actual
                 deshabilitarEquipo(equipoSeleccionado);
-                lblEquipo.setText("Hola");
+                //lblEquipo.setText("Hola");
                 // Mostrar algún mensaje de confirmación o pasar a otro equipo (según sea necesario)
+                if (dlmEquipos.size() == 0) {
+                	VentanaMain vm = new VentanaMain("admin");
+                }
                 lblEquipo.setText("Equipo " + equipoSeleccionado + ": completado. Selecciona el siguiente equipo.");
                 
                 if (equiposCompletados.size() == 6) {
