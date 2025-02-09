@@ -89,7 +89,7 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
     // Método que muestra los jugadores disponibles para el equipo seleccionado
     private void mostrarJugadores() {
         if (lstEquipos.getSelectedValue() != null) {
-            equipoSeleccionado = lstEquipos.getSelectedValue();
+            equipoSeleccionado = lstEquipos.getSelectedValue().trim();
 
             // Verificar si el equipo ya fue completado
             if (equiposCompletados.contains(equipoSeleccionado)) {
@@ -142,19 +142,30 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
         	if (VentanaMain.matrizJornadas.get(VentanaMain.matrizJornadas.size()-1).getJornadaNumero() >= 10) {
             // Obtener los jugadores seleccionados
             List<Jugador> seleccionados = lstJugadores.getSelectedValuesList();
-
+            System.out.println(equipos);
+            System.out.println("hola");
             // Validar que se seleccionen 5 jugadores
             if (seleccionados.size() == 5) {
-                // Agregar los jugadores seleccionados al equipo
-            	Equipo equipo = new Equipo (lstEquipos.getName(), null, null, null, null, null);
-            	
-            	
+                // Agregar los jugadores seleccionados al equip
+                jugadoresSeleccionadosEquipo.addAll(seleccionados);
+
                 // Agregar estos jugadores a la lista de jugadores ya seleccionados
                 jugadoresYaSeleccionados.addAll(seleccionados);
-
+                
+                System.out.println(equipos);
+                
+                // Agregar los jugadores seleccionados al equipo
+                for (Equipo eq : equipos) {
+                	if (eq.getNombre() == equipoSeleccionado) {
+                		eq.setJugadores(seleccionados);
+                		lblEquipo.setText("Hola" + seleccionados);
+                	}
+                }
+                
                 // Deshabilitar los jugadores seleccionados
                 for (Jugador jugador : seleccionados) {
                     dlmJugadores.removeElement(jugador);
+                    System.out.println("hola");
                 }
 
                 // Marcar el equipo como completado
@@ -168,9 +179,14 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
 
                 // Deshabilitar la selección del equipo actual
                 deshabilitarEquipo(equipoSeleccionado);
-
+                lblEquipo.setText("Hola");
                 // Mostrar algún mensaje de confirmación o pasar a otro equipo (según sea necesario)
-                lblEquipo.setText("Equipo " + equipoSeleccionado + " completado. Selecciona el siguiente equipo.");
+                lblEquipo.setText("Equipo " + equipoSeleccionado + ": completado. Selecciona el siguiente equipo.");
+                
+                if (equiposCompletados.size() == 6) {
+                	
+                	
+                }
             }
         } else {
         	System.out.println("La temporada "+VentanaMain.matrizJornadas.get(VentanaMain.matrizJornadas.size()-1).getTemporadaNumero()+" no ha sido finalizada");
@@ -197,7 +213,7 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
             }
         } catch (EOFException e) {
             // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
-            System.out.println("Archivo cargado completamente.");
+            System.out.println("Archivo cargado completament :).");
         } catch (FileNotFoundException e) {
             System.err.println("El archivo no existe: " + archivo);
         } catch (IOException | ClassNotFoundException e) {

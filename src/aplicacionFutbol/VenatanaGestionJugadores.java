@@ -447,7 +447,7 @@ public class VenatanaGestionJugadores extends JFrame implements ActionListener, 
 			 for (int i = 0; i < dlm.size(); i++) {
 	                oos.writeObject(dlm.get(i)); // Escribir cada objeto
 	            }
-	            System.out.println("Lista guardada en objetos.ser");
+	            System.out.println("Lista guardada en Jugadores.ser");
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
