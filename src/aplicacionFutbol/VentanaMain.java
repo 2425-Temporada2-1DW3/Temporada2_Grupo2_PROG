@@ -101,6 +101,7 @@ public class VentanaMain extends JFrame {
 	private JTable tablaClasificacion; // Tabla para mostrar la clasificación de los equipos
 	private DefaultTableModel modeloTablaClasificacion; // Modelo de la tabla de clasificación
 	private List<Equipo> listaEquipos; // Lista de objetos Equipo que representan a los equipos en la liga
+	private List<Temporada> listaTemporadas;
 	private boolean modoSoloLectura = false; // Variable para controlar el modo de solo lectura
 	private final JComboBox<String> comboBox = new JComboBox<>(); // ComboBox para seleccionar la jornada
 	private JLabel lblRol = new JLabel(); // JLabel para mostrar el rol del usuario
@@ -239,6 +240,8 @@ public class VentanaMain extends JFrame {
 	
 	public static String[] temporadas = {"2023", "2024"};
 	private final JButton btnJugadores = new JButton("Jugadores");
+	private final JButton btnXML = new JButton("generate XML");
+	
 
 	// Método para guardar los resultados de los partidos
 	private void guardarResultados() {
@@ -698,6 +701,13 @@ public class VentanaMain extends JFrame {
 			}
 		});
 		
+		panel_3.add(btnXML);
+		btnXML.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent x) {
+				GenerarTemporadasXML();
+			}
+		});
+		
 		panel_3.add(btnUsuarios);
 		btnJugadores.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -743,6 +753,83 @@ public class VentanaMain extends JFrame {
 		btnExportarPDF.setForeground(Color.WHITE);
 		btnExportarPDF.addActionListener(e -> exportarTablaAPDF());
 		panel_3.add(btnExportarPDF);
+	}
+	
+	private void GenerarTemporadasXML() {
+		
+		listaTemporadas = VentanaIniciarTemporada.tmps.getTemporadas();
+		
+		//Se genera el archivo xml
+		try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+
+            Element rootElement = doc.createElement("tempos");//raiz
+            doc.appendChild(rootElement);
+
+            for (int t = 0; t < listaTemporadas.size(); t++) {
+            	
+            	Temporada temporada = listaTemporadas.get(t);
+            	
+                Element tempo = doc.createElement("tempo"); //Raiz -> temporada
+                rootElement.appendChild(doc.createTextNode(String.valueOf(temporada.getAno()))); //lo confunde con la Clase
+
+
+                List<Equipo> lstEquipos; 
+                lstEquipos = temporada.getEquipos();
+                
+                for (int e; e < lstEquipos.size(); e++) {
+                	
+                	Equipo equipoActual = lstEquipos.get(e);
+                	
+                    Element Equipo = doc.createElement("teams"); //temporada -> Equipo
+                    tempo.appendChild(doc.createTextNode("teams")); 
+
+                    Element nombre = doc.createElement("nombre");
+                    Equipo.appendChild(doc.createTextNode(equipoActual.getNombre()));
+                    
+                    Element ruta = doc.createElement("ruta");
+                    Equipo.appendChild(doc.createTextNode(equipoActual.getRutaImagen()));
+                    
+                    List<Jugador> lstJugadores; 
+                    lstJugadores = equipoActual.getJugadores();
+
+                    for (int j; j < lstJugadores.size(); j++) {
+                    	
+                    	Jugador jugadorACtual = lstJugadores.get(e);
+                    	
+                        Element jugador = doc.createElement("player"); //temporada -> Equipo
+                        Equipo.appendChild(doc.createTextNode("player")); 
+
+                        Element firstName = doc.createElement("firstName");
+                        jugador.appendChild(doc.createTextNode(jugadorACtual.getNombre()));
+                        
+                        Element lastName = doc.createElement("lastName");
+                        jugador.appendChild(doc.createTextNode(jugadorACtual.getApellidos()));
+                        
+                        Element rutaJugador = doc.createElement("rutaJugador");
+                        jugador.appendChild(doc.createTextNode(jugadorACtual.getRutaImagen()));
+
+                    }
+                }
+            }
+
+            // Especifica la ruta absoluta para guardar el archivo XML
+            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(filePath));
+            transformer.transform(source, result);
+
+            System.out.println("Archivo XML guardado en " + filePath);
+            System.out.println("");
+
+        } catch (ParserConfigurationException | TransformerException e) {
+            e.printStackTrace();
+        }
+	
 	}
 	
 	private void actualizarComboBox() {
@@ -900,6 +987,16 @@ public class VentanaMain extends JFrame {
 			this.golesFavor = 0; // Inicializar goles a favor
 			this.golesContra = 0; // Inicializar goles en contra
 			this.puntos = 0; // Inicializar puntos
+		}
+
+		public List<Jugador> getJugadores() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String getRutaImagen() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		public String getNombre() {

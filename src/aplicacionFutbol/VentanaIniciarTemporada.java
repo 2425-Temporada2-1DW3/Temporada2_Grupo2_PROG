@@ -43,7 +43,7 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
     private JComboBox<Equipo> comboBox_4;
     private JComboBox<Equipo> comboBox_5;
     private JButton btnNewButton;
-    private static Temporadas tmps;
+    public static Temporadas tmps;
 
     /**
      * Launch the application.
