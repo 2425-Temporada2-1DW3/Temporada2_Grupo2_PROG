@@ -816,7 +816,7 @@ public class VentanaMain extends JFrame {
             }
 
             // Especifica la ruta absoluta para guardar el archivo XML
-            String filePath = "C:\\xampp\\htdocs\\Temporada2_Grupo2_LM\\HTML\\clasificacion.xml";
+            String filePath = "C:\\xampp\\clasificacion.xml";
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
