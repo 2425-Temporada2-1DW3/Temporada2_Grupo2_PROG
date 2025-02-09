@@ -776,12 +776,12 @@ public class VentanaMain extends JFrame {
                 rootElement.appendChild(doc.createTextNode(String.valueOf(temporada.getAno()))); //lo confunde con la Clase
 
 
-                List<Equipo> lstEquipos; 
+                List<aplicacionFutbol.Equipo> lstEquipos; 
                 lstEquipos = temporada.getEquipos();
                 
-                for (int e; e < lstEquipos.size(); e++) {
+                for (int e = 0; e < lstEquipos.size(); e++) {
                 	
-                	Equipo equipoActual = lstEquipos.get(e);
+                	aplicacionFutbol.Equipo equipoActual = lstEquipos.get(e);
                 	
                     Element Equipo = doc.createElement("teams"); //temporada -> Equipo
                     tempo.appendChild(doc.createTextNode("teams")); 
@@ -795,7 +795,7 @@ public class VentanaMain extends JFrame {
                     List<Jugador> lstJugadores; 
                     lstJugadores = equipoActual.getJugadores();
 
-                    for (int j; j < lstJugadores.size(); j++) {
+                    for (int j = 0; j < lstJugadores.size(); j++) {
                     	
                     	Jugador jugadorACtual = lstJugadores.get(e);
                     	
