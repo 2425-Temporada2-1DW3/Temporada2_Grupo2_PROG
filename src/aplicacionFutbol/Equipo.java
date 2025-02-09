@@ -45,12 +45,16 @@ public class Equipo implements Serializable {
         this.jugadores = new ArrayList<>(); // Inicializar la lista de jugadores
     }
 
-    @Override
-    public String toString() {
-        return "Equipo [nombre=" + nombre_e + ", Año de fundacion=" + ano + "]";
-    }
 
-    public String getNombre() {
+    
+
+    @Override
+	public String toString() {
+		return "Equipo [nombre_e=" + nombre_e + ", jugadores=" + jugadores + ", ano=" + ano + ", rutaImagen="
+				+ rutaImagen + "]";
+	}
+    
+	public String getNombre() {
         return nombre_e;
     }
 
