@@ -100,7 +100,7 @@ public class VentanaMain extends JFrame {
 	private List<String[][]> jornadas; // Almacena las jornadas y los partidos correspondientes
 	private JTable tablaClasificacion; // Tabla para mostrar la clasificación de los equipos
 	private DefaultTableModel modeloTablaClasificacion; // Modelo de la tabla de clasificación
-	private List<Equipo> listaEquipos; // Lista de objetos Equipo que representan a los equipos en la liga
+	private List<EquipoInterno> listaEquipos; // Lista de objetos Equipo que representan a los equipos en la liga
 	private List<Temporada> listaTemporadas;
 	private boolean modoSoloLectura = false; // Variable para controlar el modo de solo lectura
 	private final JComboBox<String> comboBox = new JComboBox<>(); // ComboBox para seleccionar la jornada
@@ -175,7 +175,7 @@ public class VentanaMain extends JFrame {
 
 		// Crea objetos Equipo para cada equipo en la lista
 		for (String equipo : equipos) {
-			listaEquipos.add(new Equipo(equipo));
+			listaEquipos.add(new EquipoInterno(equipo));
 		}
 
 		// Genera los partidos para cada jornada
@@ -415,7 +415,7 @@ public class VentanaMain extends JFrame {
 
 	// Método para actualizar los datos de los equipos después de un partido
 	private void actualizarEquipos(String equipoNombre, int golesFavor, int golesContra) {
-		for (Equipo equipo : listaEquipos) { // Iterar sobre la lista de equipos
+		for (EquipoInterno equipo : listaEquipos) { // Iterar sobre la lista de equipos
 			if (equipo.getNombre().equals(equipoNombre)) { // Buscar el equipo correspondiente
 				equipo.agregarResultado(golesFavor, golesContra); // Actualizar goles
 				if (golesFavor > golesContra) {
@@ -779,7 +779,7 @@ public class VentanaMain extends JFrame {
                 List<Equipo> lstEquipos; 
                 lstEquipos = temporada.getEquipos();
                 
-                for (int e; e < lstEquipos.size(); e++) {
+                for (int e = 0; e < lstEquipos.size(); e++) {
                 	
                 	Equipo equipoActual = lstEquipos.get(e);
                 	
@@ -795,7 +795,7 @@ public class VentanaMain extends JFrame {
                     List<Jugador> lstJugadores; 
                     lstJugadores = equipoActual.getJugadores();
 
-                    for (int j; j < lstJugadores.size(); j++) {
+                    for (int j = 0; j < lstJugadores.size(); j++) {
                     	
                     	Jugador jugadorACtual = lstJugadores.get(e);
                     	
@@ -951,9 +951,9 @@ public class VentanaMain extends JFrame {
 
 	// Método para actualizar la tabla de clasificación después de cada jornada
 	private void actualizarTablaClasificacion() {
-	    Collections.sort(listaEquipos, new Comparator<Equipo>() {
+	    Collections.sort(listaEquipos, new Comparator<EquipoInterno>() {
 	        @Override
-	        public int compare(Equipo e1, Equipo e2) {
+	        public int compare(EquipoInterno e1, EquipoInterno e2) {
 	            int puntosComparar = Integer.compare(e2.getPuntos(), e1.getPuntos());
 	            if (puntosComparar == 0) {
 	                int golesFavorComparar = Integer.compare(e2.getGolesFavor(), e1.getGolesFavor());
@@ -968,21 +968,21 @@ public class VentanaMain extends JFrame {
 
 	    modeloTablaClasificacion.setRowCount(0);
 	    for (int i = 0; i < listaEquipos.size(); i++) {
-	        Equipo equipo = listaEquipos.get(i);
+	        EquipoInterno equipo = listaEquipos.get(i);
 	        modeloTablaClasificacion.addRow(new Object[] { i + 1, equipo.getNombre(), equipo.getPuntos(),
 	                equipo.getGolesFavor(), equipo.getGolesContra(), equipo.getDiferenciaGoles() });
 	    }
 	}
 
 	// Clase interna que representa a un equipo en la liga
-	class Equipo {
+	class EquipoInterno {
 		private String nombre; // Nombre del equipo
 		private int golesFavor; // Goles a favor del equipo
 		private int golesContra; // Goles en contra del equipo
 		private int puntos; // Puntos acumulados por el equipo
 
 		// Constructor de la clase Equipo
-		public Equipo(String nombre) {
+		public EquipoInterno(String nombre) {
 			this.nombre = nombre; // Asignar el nombre del equipo
 			this.golesFavor = 0; // Inicializar goles a favor
 			this.golesContra = 0; // Inicializar goles en contra
