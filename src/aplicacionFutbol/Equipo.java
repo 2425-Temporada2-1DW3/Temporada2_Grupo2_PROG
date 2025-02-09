@@ -31,6 +31,12 @@ public class Equipo implements Serializable {
         this.jugadores.add(j4);
         this.jugadores.add(j5);
     }
+    
+    // Constructor equipo lleno
+    public Equipo(String nombre, List jugadores) {
+        this.nombre_e = nombre;
+        this.jugadores = jugadores;
+    }
 
     // Constructor equipo vacío
     public Equipo(String nombre, int anodefundacion) {

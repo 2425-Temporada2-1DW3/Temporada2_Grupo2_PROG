@@ -43,6 +43,7 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
     private JComboBox<Equipo> comboBox_4;
     private JComboBox<Equipo> comboBox_5;
     private JButton btnNewButton;
+    private static Temporadas tmps;
 
     /**
      * Launch the application.
@@ -117,7 +118,9 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
         // Inicializar el DefaultListModel y cargar equipos en los JComboBox
         equipos = new DefaultListModel<>();
         cargarEquipos("Equipos.ser");
+        cargarTemporadas("Temporadas.ser");
         cargarEquiposEnComboBox();
+        
 
         // Añadir ActionListener a los JComboBox
         comboBox.addActionListener(this);
@@ -250,6 +253,9 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
 
                     Temporada temporada = new Temporada(ano, equiposSeleccionados);
                     temporadas.add(temporada);
+                    // generamos un nuevo objeto con todas las temporadas.
+                    tmps = new Temporadas(temporadas);
+                    
                     guardarTemporadas("Temporadas.ser");
 
                     // Abrir la siguiente ventana para mostrar los equipos de la temporada
@@ -295,4 +301,27 @@ public class VentanaIniciarTemporada extends JFrame implements ActionListener, W
             e.printStackTrace();
         }
     }
+    
+	/*
+	 * FUNCION DE CARGAR USUARIOS .SER ----> DLM
+	 *---------------------------------------------------------------------------------------- */
+	public void cargarTemporadas(String archivo) {
+		 try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+	            // Leer el archivo objeto por objeto y agregarlo al DefaultListModel
+	            Object obj;
+	            while ((obj = ois.readObject()) != null) {
+	                if (obj instanceof Temporada) {
+	                	Temporada temp = (Temporada) obj;
+	                    temporadas.add(temp);
+	                }
+	            }
+	        } catch (EOFException e) {
+	            // Se alcanza el final del archivo, esta excepción es normal cuando termina la lectura
+	            System.out.println("Archivo cargado completamente :(");
+	        } catch (FileNotFoundException e) {
+	            System.err.println("El archivo no existe: " + archivo);
+	        } catch (IOException | ClassNotFoundException e) {
+	            e.printStackTrace();
+	        }
+	}
 }
