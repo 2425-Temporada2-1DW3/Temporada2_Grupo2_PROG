@@ -17,6 +17,7 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
     private DefaultListModel<String> dlmEquipos; // Modelo para la lista de equipos
     private JButton btnSiguiente;
     private JLabel lblEquipo;
+    private int NumeroEquipo = 0;
     private int jugadoresSeleccionados = 0;
     private String equipoSeleccionado = "";
     private List<Equipo> equipos;
@@ -82,6 +83,7 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
 
         // Cargar jugadores desde el archivo Jugadores.ser
         cargarJugadores("Jugadores.ser");
+        VentanaMain.cargarJornadas("Jornadas.ser");
     }
 
     // Método que muestra los jugadores disponibles para el equipo seleccionado
@@ -137,14 +139,16 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnSiguiente) {
+        	if (VentanaMain.matrizJornadas.get(VentanaMain.matrizJornadas.size()-1).getJornadaNumero() >= 10) {
             // Obtener los jugadores seleccionados
             List<Jugador> seleccionados = lstJugadores.getSelectedValuesList();
 
             // Validar que se seleccionen 5 jugadores
             if (seleccionados.size() == 5) {
                 // Agregar los jugadores seleccionados al equipo
-                jugadoresSeleccionadosEquipo.addAll(seleccionados);
-
+            	Equipo equipo = new Equipo (lstEquipos.getName(), null, null, null, null, null);
+            	
+            	
                 // Agregar estos jugadores a la lista de jugadores ya seleccionados
                 jugadoresYaSeleccionados.addAll(seleccionados);
 
@@ -168,6 +172,9 @@ public class VentanaAnadirJugadores extends JFrame implements ActionListener {
                 // Mostrar algún mensaje de confirmación o pasar a otro equipo (según sea necesario)
                 lblEquipo.setText("Equipo " + equipoSeleccionado + " completado. Selecciona el siguiente equipo.");
             }
+        } else {
+        	System.out.println("La temporada "+VentanaMain.matrizJornadas.get(VentanaMain.matrizJornadas.size()-1).getTemporadaNumero()+" no ha sido finalizada");
+        }
         }
     }
 
